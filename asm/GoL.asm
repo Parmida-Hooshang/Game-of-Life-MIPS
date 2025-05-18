@@ -10,6 +10,7 @@ in_between:		.space 	32
 corpse: 		.word 	-1:8
 everlasting:	.space 	1
 days:			.space	1
+iterations:		.byte	5:1
 
 newline:		.asciiz	"\n"
 msg1:			.asciiz	"GSA:\n"
@@ -133,6 +134,9 @@ Fate:
 # Uses: Fate					        # 
 #########################################################
 Tomorrow:
+	la		$t0, everlasting
+	addi 	$t1, $zero, 1
+	sb 		$t1, 0($t0)
 	jr 		$ra
 
 
@@ -143,9 +147,29 @@ Tomorrow:
 # Uses: Tomorrow                           		#
 #########################################################
 Crystal_ball:
+	# got to utilize the stack...
+	la 		$s0, iterations
+	lb 		$s0, 0($s0)
+	addi 	$s1, $zero, 0
+
+_loopcb:
+	beq 	$s1, $s0, _endcb
+
+	addi 	$s2, $ra, 0
+	jal 	Tomorrow
+	addi 	$ra, $s2, 0
+	
+	la 		$s2, everlasting
+	lb 		$s2, 0($s2)
+	addi 	$s3, $zero, 1
+
+	addi 	$s1, $s1, 1
+	bne 	$s2, $s3, _loopcb
+
+_endcb:
 	la 		$t0, days
-	addi	$t1, $zero, 1
-	sb		$t1, 0($t0)
+	sb 		$s1, 0($t0)
+
 	jr 		$ra
 
 #########################################################
