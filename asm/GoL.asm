@@ -157,8 +157,8 @@ _proc_row:
 
 _proc_col:
 	beq	$t1, $t3, _end_proc_col	# Exit if all cols processed
-	addi	$a0, $zero, $t0		# Pass row index to Fate
-	addi	$a1, $zero, $t1		# Pass col index to Fate
+	add	$a0, $zero, $t0		# Pass row index to Fate
+	add	$a1, $zero, $t1		# Pass col index to Fate
 	jal	Fate			# Call Fate
 	beq	$v0, $zero, _kill_cell	# Branch if cell dies
 
