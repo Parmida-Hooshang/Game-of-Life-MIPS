@@ -1,12 +1,20 @@
-
-
 #########################################################
-# Name: Hope					        #
-# Functionality: Counting the number of alive neighbors #
+# Name: Fate											#
+# Functionality: Decides whether the cell is alive or	#
+#		 dead in the next stage			#
 # Results: Number of alive neighbors 		        #
 # Uses: -					        # 
 #########################################################
-Hope:
+Fate:
+
+
+#########################################################
+# Name: Tomorrow				 	#
+# Functionality: Evaluation of the next state 	        #
+# Results: Next state GSA and the Everlasting flag	#
+# Uses: Fate					        # 
+#########################################################
+Tomorrow:
 
 
 #########################################################
@@ -28,21 +36,12 @@ Today:
 
 
 #########################################################
-# Name: Tomorrow				        #
-# Functionality: Evaluation of the next state 	        #
-# Results: GSA of the next state		        #
-# Uses: Hope					        # 
-#########################################################
-Tomorrow:
-
-
-#########################################################
-# Name: Fate					        #
+# Name: Crystal_ball					#
 # Functionality: Preprocessing 			        #
 # Results: Number of iterations, Positions of walls     #
 # Uses: Tomorrow, Equilibrium                           #
 #########################################################
-Fate:
+Crystal_ball:
 
 
 #########################################################
