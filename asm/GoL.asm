@@ -134,10 +134,64 @@ Fate:
 # Uses: Fate					        # 
 #########################################################
 Tomorrow:
-	la		$t0, everlasting
-	addi 	$t1, $zero, 1
-	sb 		$t1, 0($t0)
-	jr 		$ra
+	addi 	$sp, $sp, -4	# Allocate stack space
+ 	sw 	$ra, 0($sp) 	# Save return address
+
+	xor	$t0, $t0, $t0	# Initialize row index = 0
+	xor	$t1, $t1, $t1	# Initialize col index = 0 (later reused for everlasting flag) :)
+	addi	$t2, $zero, 8 	# Max rows = 8
+	addi	$t3, $zero, 12	# Max cols = 12
+	addi	$t4, $zero, 1	# One-hot mask (later reused for everlasting flag) :)
+	la	$t5, presence	# Current GSA (presence) address
+	la	$t6, in_between	# Next GSA (in_between) address
+	xor	$t7, $t7, $t7	# Current GSA word
+	xor	$t8, $t8, $t8	# Next GSA word
+	addi	$t9, $zero, -1	# One-hot complement mask
+
+_proc_row:
+	beq	$t0, $t2, _end_proc_row	# Exit if all rows processed
+	xor	$t1, $t1, $t1		# Reset col index = 0
+	addi	$t4, $zero, 1		# Reset one-hot mask
+	lw	$t7, 0($t5)		# Load current GSA word
+	lw	$t8, 0($t6)		# Load next GSA word
+
+_proc_col:
+	beq	$t1, $t3, _end_proc_col	# Exit if all cols processed
+	addi	$a0, $zero, $t0		# Pass row index to Fate
+	addi	$a1, $zero, $t1		# Pass col index to Fate
+	jal	Fate			# Call Fate
+	beq	$v0, $zero, _kill_cell	# Branch if cell dies
+
+	or	$t8, $t8, $t4		# Set cell alive (OR with one-hot mask)
+	j	_spare_cell		# Keep cell alive
+
+_kill_cell:
+	addi	$t9, $zero, -1		# Reset complement mask
+	xor	$t9, $t9, $t4		# Invert one-hot mask
+	and	$t8, $t8, $t9		# Clear cell
+
+_spare_cell:
+	sll	$t4, $t4, 1		# Shift one-hot mask left (for next cell)
+	addi	$t1, $t1, 1		# Increment col index
+	j	_proc_col		# Continue the loop
+
+_end_proc_col:
+	bne	$t7, $t8, _evolving	# Skip if GSA changed
+	addi	$t4, $zero, 1		# Set everlasting flag = 1 (reusing $t4) :)
+	la	$t1, everlasting	# Load everlasting address (reusing $t1) :)
+	sb	$t4, 0($t1)		# Store flag (reusing $t1 and $t4) :)
+
+_evolving:
+	sw	$t8, 0($t6)		# Store next GSA word
+	addi	$t0, $t0, 1		# Increment row index
+	addi	$t5, $t5, 4		# Move to next GSA word
+	addi	$t6, $t6, 4		# Move to next GSA word
+	j	_proc_row		# Continue the loop
+
+_end_proc_row:
+ 	lw 	$ra, 0($sp) 		# Restore return address
+ 	addi 	$sp, $sp, 4 		# Deallocate stack space
+	jr	$ra			# Return to caller
 
 
 #########################################################
