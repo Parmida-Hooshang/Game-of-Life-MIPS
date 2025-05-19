@@ -126,6 +126,7 @@ _eternity:
 #########################################################
 Fate:
 
+	jr	$ra	# Return to caller
 
 #########################################################
 # Name: Tomorrow				 	#
@@ -137,11 +138,15 @@ Tomorrow:
 	addi 	$sp, $sp, -4	# Allocate stack space
  	sw 	$ra, 0($sp) 	# Save return address
 
+	la	$t0, everlasting	# Load everlasting address
+	addi	$t1, $zero, 1		# Set $t1 = 1
+	sb	$t1, 0($t0)		# Initialize everlasting flag = 1
+
 	xor	$t0, $t0, $t0	# Initialize row index = 0
 	xor	$t1, $t1, $t1	# Initialize col index = 0 (later reused for everlasting flag) :)
 	addi	$t2, $zero, 8 	# Max rows = 8
 	addi	$t3, $zero, 12	# Max cols = 12
-	addi	$t4, $zero, 1	# One-hot mask (later reused for everlasting flag) :)
+	addi	$t4, $zero, 1	# One-hot mask
 	la	$t5, presence	# Current GSA (presence) address
 	la	$t6, in_between	# Next GSA (in_between) address
 	xor	$t7, $t7, $t7	# Current GSA word
@@ -176,12 +181,14 @@ _spare_cell:
 	j	_proc_col		# Continue the loop
 
 _end_proc_col:
-	bne	$t7, $t8, _evolving	# Skip if GSA changed
-	addi	$t4, $zero, 1		# Set everlasting flag = 1 (reusing $t4) :)
-	la	$t1, everlasting	# Load everlasting address (reusing $t1) :)
-	sb	$t4, 0($t1)		# Store flag (reusing $t1 and $t4) :)
+	bne	$t7, $t8, _evolving	# If GSA changed, clear everlasting flag
+	j	_not_evolving		# Else, keep the current everlasting flag
 
 _evolving:
+	la	$t1, everlasting	# Load everlasting address (reusing $t1) :)
+	sb	$zero, 0($t1)		# clear everlasting flag 
+
+_not_evolving:
 	sw	$t8, 0($t6)		# Store next GSA word
 	addi	$t0, $t0, 1		# Increment row index
 	addi	$t5, $t5, 4		# Move to next GSA word
