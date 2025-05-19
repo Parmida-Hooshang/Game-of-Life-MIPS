@@ -232,12 +232,65 @@ _end_proc_row:
 
 
 #########################################################
+# Name: Physician					#
+# Functionality: Inspects corpses coming to life  	#
+# Result: Updated corpse array based on presence     	#
+# Uses: Pulse                         #
+#########################################################
+Physician:
+	addi	$t2, $zero, 0	# t2 = x counter
+	addi	$t3, $zero, 0	# t3 = y counter
+	addi	$t4, $zero, 8	# t4 = x limit
+	addi	$t5, $zero, 12	# t5 = y limit
+
+_check1:
+	beq		$t2, $t4, _endcheck1	# x is out of range
+	
+_check2:
+	beq 	$t3, $t5, _endcheck2	# y is out of range
+
+	# call pulse and see if it's alive	
+	addi	$a0, $t2, 0
+	addi	$a1, $t3, 0
+	jal 	Pulse
+
+	beq		$v0, $zero, _skipcb		# if it's dead
+
+	addi 	$t7, $zero, 1
+	sllv 	$t7, $t7, $t2
+	nor 	$t7, $t7, $zero			# 11..101..11
+	la		$t8, presence
+	sll		$t9, $t2, 4				# which word * 4
+	addi	$t8, $t8, $t9			# t8 = address of the word
+	lw		$t8, 0($t8)
+	and 	$t8, $t8, $t7
+	la		$t7, presence
+	addi	$t7, $t7, $t9
+	sw		$t8, 0($t7)				# update the word
+
+_skipcb:
+	addi 	$t3, $t3, 1
+	j 		_check2
+
+_endcheck2:
+
+	addi 	$t2, $t2, 1
+	j		_check1
+	
+_endcheck1:
+	jr $ra
+
+
+#########################################################
 # Name: Crystal_ball					#
 # Functionality: Unveils the destined conclusion  	#
 # Results: Number of days, position of corpses     	#
-# Uses: Tomorrow                           		#
+# Uses: Tomorrow, Physician                         #
 #########################################################
 Crystal_ball:
+	# unset corpses based on the original array
+	jal 	Physician
+
 	la 		$t0, iterations		
 	lb 		$t0, 0($t0)			# t0 = max iterations
 	addi 	$t1, $zero, 0		# t1 = iteration counter
@@ -257,6 +310,13 @@ _loopcb:
 	lw 		$t0, 0($sp)
 	addi 	$sp, $sp, 12
 	
+	la		$a1, presence
+	la		$a0, in_between
+	jal 	Resurrection		# presence = origin
+
+	# unset corpses based on the obtained array
+	jal 	Physician
+
 	la 		$t2, everlasting
 	lb 		$t2, 0($t2)
 	addi 	$t3, $zero, 1
