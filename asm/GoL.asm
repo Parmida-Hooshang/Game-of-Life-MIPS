@@ -119,14 +119,44 @@ _eternity:
 
 
 #########################################################
+# Name: Pulse						#
+# Functionality: Determines the current state of a cell	#
+# Result: Returns 0 (dead) or 1 (alive)			#
+# Uses: -						#
+#########################################################
+Pulse:
+	# Load the ith element in the current GSA (presence)
+	la	$t0, presence
+	add	$t1, $zero, $a0
+	sll	$t1, $t1, 2
+	add	$t0, $t0, $t1
+	lw	$t1, 0($t0)
+	
+	# Create a bitmask for the jth column
+	addi	$t2, $zero, 1
+	sllv	$t2, $t2, $a1
+	
+	# Test the bit
+	xor	$v0, $v0, $v0
+	and	$t1, $t1, $t2
+	bne	$t1, $t2, _no_pulse
+	addi	$v0, $zero, 1
+
+	# Return the result
+_no_pulse:
+	jr	$ra
+
+
+#########################################################
 # Name: Fate						#
 # Functionality: Determines the future of a cell	#
-# Result: The cell's state of life 			#
+# Result: The cell's state of life in the next GSA	#
 # Uses: -					        # 
 #########################################################
 Fate:
 
 	jr	$ra	# Return to caller
+
 
 #########################################################
 # Name: Tomorrow				 	#
