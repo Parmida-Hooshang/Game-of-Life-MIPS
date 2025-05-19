@@ -39,12 +39,12 @@ Genesis:
 	# iterations -> days
 	# walls -> corpse
 
-	la		$s5, days
-	lb		$s5, 0($s5)
-	addi	$s0, $zero, 0
+	la		$s5, days			
+	lb		$s5, 0($s5)			# s5 = days
+	addi	$s0, $zero, 0		# s0 = day counter
 	
 _flow:
-	beq		$s0, $s5, _eternity
+	beq		$s0, $s5, _eternity	# if gone through all days
 	
 	jal 	Tomorrow
 
@@ -238,28 +238,35 @@ _end_proc_row:
 # Uses: Tomorrow                           		#
 #########################################################
 Crystal_ball:
-	# got to utilize the stack...
-	la 		$s0, iterations
-	lb 		$s0, 0($s0)
-	addi 	$s1, $zero, 0
+	la 		$t0, iterations		
+	lb 		$t0, 0($t0)			# t0 = max iterations
+	addi 	$t1, $zero, 0		# t1 = iteration counter
 
 _loopcb:
-	beq 	$s1, $s0, _endcb
+	beq 	$t1, $t0, _endcb
 
-	addi 	$s2, $ra, 0
+	addi 	$sp, $sp, -12
+	sw 		$t0, 0($sp)
+	sw 		$t1, 0($sp)
+	sw 		$ra, 0($sp)
+
 	jal 	Tomorrow
-	addi 	$ra, $s2, 0
-	
-	la 		$s2, everlasting
-	lb 		$s2, 0($s2)
-	addi 	$s3, $zero, 1
 
-	addi 	$s1, $s1, 1
-	bne 	$s2, $s3, _loopcb
+	lw 		$ra, 0($sp)
+	lw 		$t1, 0($sp)
+	lw 		$t0, 0($sp)
+	addi 	$sp, $sp, 12
+	
+	la 		$t2, everlasting
+	lb 		$t2, 0($t2)
+	addi 	$t3, $zero, 1
+
+	addi 	$t1, $t1, 1
+	bne 	$t2, $t3, _loopcb	# if we have changes, continue the loop
 
 _endcb:
 	la 		$t0, days
-	sb 		$s1, 0($t0)
+	sb 		$t1, 0($t0)
 
 	jr 		$ra
 
