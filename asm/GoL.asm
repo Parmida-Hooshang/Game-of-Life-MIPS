@@ -126,24 +126,51 @@ _eternity:
 #########################################################
 Pulse:
 	# Load the ith element in the current GSA (presence)
-	la	$t0, presence
-	add	$t1, $zero, $a0
-	sll	$t1, $t1, 2
-	add	$t0, $t0, $t1
-	lw	$t1, 0($t0)
+	la	$t3, presence
+	add	$t4, $zero, $a0
+	sll	$t4, $t4, 2
+	add	$t3, $t3, $t4
+	lw	$t4, 0($t3)
 	
 	# Create a bitmask for the jth column
-	addi	$t2, $zero, 1
-	sllv	$t2, $t2, $a1
+	addi	$t5, $zero, 1
+	sllv	$t5, $t5, $a1
 	
 	# Test the bit
 	xor	$v0, $v0, $v0
-	and	$t1, $t1, $t2
-	bne	$t1, $t2, _no_pulse
+	and	$t4, $t4, $t5
+	bne	$t4, $t5, _no_pulse
 	addi	$v0, $zero, 1
 
 	# Return the result
 _no_pulse:
+	jr	$ra	
+
+
+#########################################################
+# Name: Bound                                           #
+# Functionality: Wraps (i,j) to valid GSA coordinates   #
+# Input: $a0 = i (row), $a1 = j (col)                   #
+# Output: -				                #
+# Uses: -                                               #
+#########################################################
+Bound:
+	bgez	$a0, _skip_fix_1
+	addi	$a0, 7
+
+_skip_fix_1:
+	bgez	$a1, _skip_fix_2
+	addi	$a1, 11
+
+_skip_fix_2:
+	bne	$a0, $a2, _skip_fix_3
+	addi	$a0, $zero, 0
+
+_skip_fix_3:
+	bne	$a1, $a3, _skip_fix_4
+	addi	$a1, $zero, 0
+
+_skip_fix_4:
 	jr	$ra
 
 
@@ -151,11 +178,113 @@ _no_pulse:
 # Name: Fate						#
 # Functionality: Determines the future of a cell	#
 # Result: The cell's state of life in the next GSA	#
-# Uses: -					        # 
+# Uses: Pulse, Bound				        # 
 #########################################################
 Fate:
+	addi 	$sp, $sp, -4	# Allocate stack space
+ 	sw 	$ra, 0($sp) 	# Save return address
 
-	jr	$ra	# Return to caller
+	xor	$t0, $t0, $t0
+	add	$t1, $zero, $a0
+	add	$t2, $zero, $a1
+	addi	$a2, $zero, 8
+	addi	$a3, $zero, 12
+
+	# -1 0
+	addi	$a0, $a0, -1
+	jal	Bound
+	jal	Pulse
+	add	$t0, $t0, $v0
+	add	$a0, $zero, $t1
+	add	$a1, $zero, $t2
+
+	# 0 -1
+	addi	$a1, $a1, 1
+	jal	Bound
+	jal	Pulse
+	add	$t0, $t0, $v0
+	add	$a0, $zero, $t1
+	add	$a1, $zero, $t2
+
+	# +1 0
+	addi	$a0, $a0, 1
+	jal	Bound
+	jal	Pulse
+	add	$t0, $t0, $v0
+	add	$a0, $zero, $t1
+	add	$a1, $zero, $t2
+
+	# 0 +1
+	addi	$a1, $a1, 1
+	jal	Bound
+	jal	Pulse
+	add	$t0, $t0, $v0
+	add	$a0, $zero, $t1
+	add	$a1, $zero, $t2
+
+	# -1 -1
+	addi	$a0, $a0, -1
+	addi	$a1, $a1, -1
+	jal	Bound
+	jal	Pulse
+	add	$t0, $t0, $v0
+	add	$a0, $zero, $t1
+	add	$a1, $zero, $t2
+
+	# -1 +1
+	addi	$a0, $a0, -1
+	addi	$a1, $a1, 1
+	jal	Bound
+	jal	Pulse
+	add	$t0, $t0, $v0
+	add	$a0, $zero, $t1
+	add	$a1, $zero, $t2
+
+	# +1 -1
+	addi	$a0, $a0, 1
+	addi	$a1, $a1, -1
+	jal	Bound
+	jal	Pulse
+	add	$t0, $t0, $v0
+	add	$a0, $zero, $t1
+	add	$a1, $zero, $t2
+
+	# +1 +1
+	addi	$a0, $a0, 1
+	addi	$a1, $a1, 1
+	jal	Bound
+	jal	Pulse
+	add	$t0, $t0, $v0
+	add	$a0, $zero, $t1
+	add	$a1, $zero, $t2
+
+	jal	Pulse
+
+	addi	$t1, $zero, 1
+	addi	$t2, $zero, 2
+	addi	$t3, $zero, 3
+
+	bne	$t0, $zero, _skip_case_0_1
+	bne	$t0, $t1, _skip_case_0_1
+	addi	$v0, $zero, 0
+	j	_return_fate
+_skip_case_0_1:
+	
+	bne	$t0, $t2, _skip_case_2
+	j	_return_fate
+_skip_case_2:
+
+	bne	$t0, $t3, _skip_case_3
+	xor	$v0, $v0, $t1
+	j	_return_fate
+_skip_case_3:
+
+	addi	$v0, $zero, 0
+
+_return_fate:
+	lw 	$ra, 0($sp) 
+ 	addi 	$sp, $sp, 4 
+	jr	$ra		
 
 
 #########################################################
@@ -192,9 +321,27 @@ _proc_row:
 
 _proc_col:
 	beq	$t1, $t3, _end_proc_col	# Exit if all cols processed
+
+	addi	$sp, $sp, -24
+	sw	$t0, 0($sp)
+	sw	$t1, 4($sp)
+	sw	$t2, 8($sp)
+	sw	$t3, 12($sp)
+	sw	$t4, 16($sp)
+	sw	$t5, 20($sp)
+
 	add	$a0, $zero, $t0		# Pass row index to Fate
 	add	$a1, $zero, $t1		# Pass col index to Fate
 	jal	Fate			# Call Fate
+
+	lw	$t5, 20($sp)
+	lw	$t4, 16($sp)
+	lw	$t3, 12($sp)
+	lw	$t2, 8($sp)
+	lw	$t1, 4($sp)
+	lw	$t0, 0($sp)
+	addi	$sp, $sp, 24
+
 	beq	$v0, $zero, _kill_cell	# Branch if cell dies
 
 	or	$t8, $t8, $t4		# Set cell alive (OR with one-hot mask)
@@ -261,11 +408,11 @@ _check2:
 	nor 	$t7, $t7, $zero			# 11..101..11
 	la		$t8, presence
 	sll		$t9, $t2, 4				# which word * 4
-	addi	$t8, $t8, $t9			# t8 = address of the word
+	add	$t8, $t8, $t9			# t8 = address of the word
 	lw		$t8, 0($t8)
 	and 	$t8, $t8, $t7
 	la		$t7, presence
-	addi	$t7, $t7, $t9
+	add	$t7, $t7, $t9
 	sw		$t8, 0($t7)				# update the word
 
 _skipcb:
@@ -332,11 +479,24 @@ _endcb:
 
 #########################################################
 # Name: Resurrection					#
-# Functionality: Swaps two GSAs 	        	#
+# Functionality: Moves GSA in $a1 to the GSA in $a0 	#
 # Result: Today is yesterday's tomorrow			#
 # Uses: -					        #
 #########################################################
 Resurrection:
-	jr 		$ra
+	addi	$t0, $zero, 0
+	addi	$t1, $zero, 8
+
+_move_element:
+	beq	$t0, $t1, _end_resurrection
+	lw	$t2, 0($a1)
+	sw	$t2, 0($a0)
+	addi	$a0, $a0, 4
+	addi	$a1, $a1, 4
+	addi	$t0, $t0, 1
+	j	_move_element
+
+_end_resurrection:
+	jr 	$ra
 
 
