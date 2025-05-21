@@ -156,11 +156,11 @@ _no_pulse:
 #########################################################
 Bound:
 	bgez	$a0, _skip_fix_1
-	addi	$a0, 7
+	addi	$a0, $zero, 7
 
 _skip_fix_1:
 	bgez	$a1, _skip_fix_2
-	addi	$a1, 11
+	addi	$a1, $zero, 11
 
 _skip_fix_2:
 	bne	$a0, $a2, _skip_fix_3
@@ -199,7 +199,7 @@ Fate:
 	add	$a1, $zero, $t2
 
 	# 0 -1
-	addi	$a1, $a1, 1
+	addi	$a1, $a1, -1
 	jal	Bound
 	jal	Pulse
 	add	$t0, $t0, $v0
@@ -264,18 +264,22 @@ Fate:
 	addi	$t2, $zero, 2
 	addi	$t3, $zero, 3
 
-	bne	$t0, $zero, _skip_case_0_1
-	bne	$t0, $t1, _skip_case_0_1
+	bne	$t0, $zero, _skip_case_0
 	addi	$v0, $zero, 0
 	j	_return_fate
-_skip_case_0_1:
+_skip_case_0:
+
+	bne	$t0, $t1, _skip_case_1
+	addi	$v0, $zero, 0
+	j	_return_fate
+_skip_case_1:
 	
 	bne	$t0, $t2, _skip_case_2
 	j	_return_fate
 _skip_case_2:
 
 	bne	$t0, $t3, _skip_case_3
-	xor	$v0, $v0, $t1
+	addi	$v0, $zero, 1
 	j	_return_fate
 _skip_case_3:
 
