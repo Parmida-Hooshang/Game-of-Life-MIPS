@@ -58,17 +58,11 @@ class Interpreter {
         instruction = instruction.trim();
         const parts = instruction.split(/[\s,]+/);
 
+        // -------------------- Labels -------------------- //
+
         // skip labels
         if (instruction.includes(':')) {
             ;
-        }
-
-        // addi
-        else if (instruction.startsWith('addi')) {
-            const rt = parts[1].substring(1);
-            const rs = parts[2].substring(1);
-            const imm = parseInt(parts[3]);
-            this.registers[rt] = this.registers[rs] + imm;
         }
 
         // la
@@ -78,12 +72,39 @@ class Interpreter {
             this.registers[dest] = this.data_labels[label];
         }
 
-        // jal
-        else if(instruction.startsWith('jal')) {
-            const target = parts[1];
-            this.registers.ra = this.pc;
-            this.pc = this.labels[target];
+        // ------------------ Arithmetic ------------------ //
+
+        // addi
+        else if (instruction.startsWith('addi')) {
+            const rt = parts[1].substring(1);
+            const rs = parts[2].substring(1);
+            const imm = parseInt(parts[3]);
+            this.registers[rt] = this.registers[rs] + imm;
         }
+
+        // -------------------- Memory -------------------- //
+
+        // load
+        else if (instruction.startsWith('lw') || instruction.startsWith('lb')) {
+            const rt = parts[1].substring(1);
+            const offset = parseInt(parts[2].split(/[\(\)]+/)[0])/4;
+            // loading bytes from non-word-aligned addresses is not supported yet.
+            const rs = parts[2].split(/[\(\)]+/)[1].substring(1);
+
+            this.registers[rt] = this.memory[this.registers[rs] + offset];
+        }
+
+        // store
+        else if (instruction.startsWith('sw') || instruction.startsWith('sb')) {
+            const rt = parts[1].substring(1);
+            const offset = parseInt(parts[2].split(/[\(\)]+/)[0])/4;
+            // storing bytes in non-word-aligned addresses is not supported yet.
+            const rs = parts[2].split(/[\(\)]+/)[1].substring(1);
+
+            this.memory[this.registers[rs] + offset] = this.registers[rt];
+        }
+
+        // ----------------- Control Path ----------------- //
 
         // beq
         else if(instruction.startsWith('beq')) {
@@ -112,6 +133,13 @@ class Interpreter {
             if (this.registers[reg] >= 0) {
                 this.pc = this.labels[target];
             }
+        }
+
+        // jal
+        else if(instruction.startsWith('jal')) {
+            const target = parts[1];
+            this.registers.ra = this.pc;
+            this.pc = this.labels[target];
         }
 
         // jr
@@ -149,14 +177,21 @@ mips.execute('addi $t0, $zero, 5');
 console.log(mips.registers.t0);
 
 // There shouldn't be any whitespace between values. Not supported yet
-mips.declare('origin: 		.word	1,2,3,4,5,6,7,8');
-mips.declare('presence: 		.space	3');
-mips.declare('corpse: 		.word 	-1:2');
+let data_segment =
+`origin: 		.word	1,2,3,4,5,6,7,8
+presence: 		.space	3
+corpse: 		.word 	-1:2`
+
+for(let line of data_segment.split('\n')) {
+    mips.declare(line);
+}
 
 let piece_of_code = 
 `Genesis: 
-	la		$a1, presence
-    jal     Genesis
+	la      $a0, origin 
+    addi    $a1, $zero, 27
+    sw      $a1, 8($a0)
+    lw      $a2, 4($a0)
     syscall`;
 
 mips.code = piece_of_code.split('\n');
