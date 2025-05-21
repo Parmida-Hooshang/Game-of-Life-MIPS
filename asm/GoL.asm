@@ -451,13 +451,13 @@ _loopcb:
 
 	addi 	$sp, $sp, -12
 	sw 		$t0, 0($sp)
-	sw 		$t1, 0($sp)
-	sw 		$ra, 0($sp)
+	sw 		$t1, 4($sp)
+	sw 		$ra, 8($sp)
 
 	jal 	Tomorrow
 
-	lw 		$ra, 0($sp)
-	lw 		$t1, 0($sp)
+	lw 		$ra, 8($sp)
+	lw 		$t1, 4($sp)
 	lw 		$t0, 0($sp)
 	addi 	$sp, $sp, 12
 	
