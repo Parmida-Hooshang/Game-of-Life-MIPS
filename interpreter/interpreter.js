@@ -60,8 +60,8 @@ class Interpreter {
 
         // -------------------- Labels -------------------- //
 
-        // skip labels
-        if (instruction.includes(':')) {
+        // skip labels and empty lines
+        if (instruction.includes(':') || instruction === "") {
             ;
         }
 
@@ -91,7 +91,12 @@ class Interpreter {
             // loading bytes from non-word-aligned addresses is not supported yet.
             const rs = parts[2].split(/[\(\)]+/)[1].substring(1);
 
-            this.registers[rt] = this.memory[this.registers[rs] + offset];
+            if (rs === "sp") {
+                this.registers[rt] = this.memory[this.registers[rs]/4 + offset];
+            }
+            else {
+                this.registers[rt] = this.memory[this.registers[rs] + offset];
+            }
         }
 
         // store
@@ -101,7 +106,12 @@ class Interpreter {
             // storing bytes in non-word-aligned addresses is not supported yet.
             const rs = parts[2].split(/[\(\)]+/)[1].substring(1);
 
-            this.memory[this.registers[rs] + offset] = this.registers[rt];
+            if(rs === "sp") {
+                this.memory[this.registers[rs]/4 + offset] = this.registers[rt];
+            }
+            else {
+                this.memory[this.registers[rs] + offset] = this.registers[rt];
+            }
         }
 
         // ----------------- Control Path ----------------- //
@@ -158,11 +168,15 @@ class Interpreter {
         else if(instruction.startsWith('syscall')) {
             return false;
         }
+
         return true;
     }
 
     control() {
         this.pc = 0;
+        // Set the stack pointer to the end of memory
+        // We assume that the stack is placed at the end of the memory array
+        this.registers.sp = 1023 * 4;
         let status = true;
         while (status) {
             this.pc += 1;
@@ -180,7 +194,7 @@ console.log(mips.registers.t0);
 let data_segment =
 `origin: 		.word	1,2,3,4,5,6,7,8
 presence: 		.space	3
-corpse: 		.word 	-1:2`
+corpse: 		.word 	-1:2`;
 
 for(let line of data_segment.split('\n')) {
     mips.declare(line);
@@ -188,10 +202,18 @@ for(let line of data_segment.split('\n')) {
 
 let piece_of_code = 
 `Genesis: 
-	la      $a0, origin 
-    addi    $a1, $zero, 27
-    sw      $a1, 8($a0)
-    lw      $a2, 4($a0)
+    addi    $a0, $zero, 77
+    addi    $a1, $zero, 777
+	addi 	$sp, $sp, -8
+	sw 		$a0, 0($sp)
+	sw 		$a1, 4($sp)
+
+	addi    $a0, $zero, -88
+    addi    $a1, $zero, -888
+
+	lw 		$a1, 4($sp)
+	lw 		$a0, 0($sp)
+	addi 	$sp, $sp, 8
     syscall`;
 
 mips.code = piece_of_code.split('\n');
