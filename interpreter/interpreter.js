@@ -66,7 +66,7 @@ class Interpreter {
         }
 
         // la
-        else if(instruction.startsWith('la')) {
+        else if(instruction.startsWith('la ')) {
             const dest = parts[1].substring(1);
             const label = parts[2];
             this.registers[dest] = this.data_labels[label];
@@ -75,17 +75,75 @@ class Interpreter {
         // ------------------ Arithmetic ------------------ //
 
         // addi
-        else if (instruction.startsWith('addi')) {
+        else if (instruction.startsWith('addi ')) {
             const rt = parts[1].substring(1);
             const rs = parts[2].substring(1);
             const imm = parseInt(parts[3]);
             this.registers[rt] = this.registers[rs] + imm;
         }
 
+        // add
+        else if (instruction.startsWith('add ')) {
+            const rd = parts[1].substring(1);
+            const rs = parts[2].substring(1);
+            const rt = parts[3].substring(1);
+            this.registers[rd] = this.registers[rs] + this.registers[rt];
+        }
+
+        // -------------------- Logical -------------------- //
+
+        // sll
+        else if (instruction.startsWith('sll ')) {
+            const rt = parts[1].substring(1);
+            const rs = parts[2].substring(1);
+            const imm = parseInt(parts[3]);
+            this.registers[rt] = this.registers[rs] << imm;
+        }
+
+        // sllv
+        else if (instruction.startsWith('sllv ')) {
+            const rd = parts[1].substring(1);
+            const rs = parts[2].substring(1);
+            const rt = parts[3].substring(1);
+            this.registers[rd] = this.registers[rs] << this.registers[rt];
+        }
+
+        // xor
+        else if (instruction.startsWith('xor ')) {
+            const rd = parts[1].substring(1);
+            const rs = parts[2].substring(1);
+            const rt = parts[3].substring(1);
+            this.registers[rd] = this.registers[rs] ^ this.registers[rt];
+        }
+
+        // and
+        else if (instruction.startsWith('and ')) {
+            const rd = parts[1].substring(1);
+            const rs = parts[2].substring(1);
+            const rt = parts[3].substring(1);
+            this.registers[rd] = this.registers[rs] & this.registers[rt];
+        }
+
+        // or
+        else if (instruction.startsWith('or ')) {
+            const rd = parts[1].substring(1);
+            const rs = parts[2].substring(1);
+            const rt = parts[3].substring(1);
+            this.registers[rd] = this.registers[rs] | this.registers[rt];
+        }
+
+        // nor
+        else if (instruction.startsWith('nor ')) {
+            const rd = parts[1].substring(1);
+            const rs = parts[2].substring(1);
+            const rt = parts[3].substring(1);
+            this.registers[rd] = ~(this.registers[rs] | this.registers[rt]);
+        }
+
         // -------------------- Memory -------------------- //
 
         // load
-        else if (instruction.startsWith('lw') || instruction.startsWith('lb')) {
+        else if (instruction.startsWith('lw ') || instruction.startsWith('lb')) {
             const rt = parts[1].substring(1);
             const offset = parseInt(parts[2].split(/[\(\)]+/)[0])/4;
             // loading bytes from non-word-aligned addresses is not supported yet.
@@ -100,7 +158,7 @@ class Interpreter {
         }
 
         // store
-        else if (instruction.startsWith('sw') || instruction.startsWith('sb')) {
+        else if (instruction.startsWith('sw ') || instruction.startsWith('sb')) {
             const rt = parts[1].substring(1);
             const offset = parseInt(parts[2].split(/[\(\)]+/)[0])/4;
             // storing bytes in non-word-aligned addresses is not supported yet.
@@ -117,7 +175,7 @@ class Interpreter {
         // ----------------- Control Path ----------------- //
 
         // beq
-        else if(instruction.startsWith('beq')) {
+        else if(instruction.startsWith('beq ')) {
             const rt = parts[1].substring(1);
             const rs = parts[2].substring(1);
             const target = parts[3];
@@ -127,7 +185,7 @@ class Interpreter {
         }
 
         // bne
-        else if(instruction.startsWith('bne')) {
+        else if(instruction.startsWith('bne ')) {
             const rt = parts[1].substring(1);
             const rs = parts[2].substring(1);
             const target = parts[3];
@@ -137,7 +195,7 @@ class Interpreter {
         }
 
         // bgez
-        else if(instruction.startsWith('bgez')) {
+        else if(instruction.startsWith('bgez ')) {
             const reg = parts[1].substring(1);
             const target = parts[2];
             if (this.registers[reg] >= 0) {
@@ -146,14 +204,14 @@ class Interpreter {
         }
 
         // jal
-        else if(instruction.startsWith('jal')) {
+        else if(instruction.startsWith('jal ')) {
             const target = parts[1];
             this.registers.ra = this.pc;
             this.pc = this.labels[target];
         }
 
         // jr
-        else if(instruction.startsWith('jr')) {
+        else if(instruction.startsWith('jr ')) {
             const target = parts[1].substring(1);
             this.pc = this.registers[target];
         }
@@ -167,6 +225,10 @@ class Interpreter {
         // exit using syscall
         else if(instruction.startsWith('syscall')) {
             return false;
+        }
+
+        else{
+            console.log("not defined!!!")
         }
 
         return true;
@@ -202,18 +264,9 @@ for(let line of data_segment.split('\n')) {
 
 let piece_of_code = 
 `Genesis: 
-    addi    $a0, $zero, 77
-    addi    $a1, $zero, 777
-	addi 	$sp, $sp, -8
-	sw 		$a0, 0($sp)
-	sw 		$a1, 4($sp)
-
-	addi    $a0, $zero, -88
-    addi    $a1, $zero, -888
-
-	lw 		$a1, 4($sp)
-	lw 		$a0, 0($sp)
-	addi 	$sp, $sp, 8
+    addi    $a0, $zero, 25
+    addi    $a1, $zero, 74
+    nor     $a2, $a0, $a1
     syscall`;
 
 mips.code = piece_of_code.split('\n');
