@@ -47,6 +47,7 @@ class Interpreter {
             if (line.includes(':')) {
                 // it's a label
                 this.labels[line.trim().slice(0,-1)] = this.pc + 1;
+                // lebels hold the address (index) of their NEXT instruction
             }
             this.pc += 1;
         }
@@ -55,9 +56,15 @@ class Interpreter {
 
     execute(instruction) {
         instruction = instruction.trim();
+        const parts = instruction.split(/[\s,]+/);
+
+        // skip labels
+        if (instruction.includes(':')) {
+            ;
+        }
+
         // addi
-        if (instruction.startsWith('addi')) {
-            const parts = instruction.split(/[\s,]+/);
+        else if (instruction.startsWith('addi')) {
             const rt = parts[1].substring(1);
             const rs = parts[2].substring(1);
             const imm = parseInt(parts[3]);
@@ -66,13 +73,73 @@ class Interpreter {
 
         // la
         else if(instruction.startsWith('la')) {
-            const parts = instruction.split(/[\s,]+/);
             const dest = parts[1].substring(1);
             const label = parts[2];
-            this.registers[dest] = this.labels[label];
+            this.registers[dest] = this.data_labels[label];
         }
 
-        // Add other instructions...
+        // jal
+        else if(instruction.startsWith('jal')) {
+            const target = parts[1];
+            this.registers.ra = this.pc;
+            this.pc = this.labels[target];
+        }
+
+        // beq
+        else if(instruction.startsWith('beq')) {
+            const rt = parts[1].substring(1);
+            const rs = parts[2].substring(1);
+            const target = parts[3];
+            if (this.registers[rs] === this.registers[rt]) {
+                this.pc = this.labels[target];
+            }
+        }
+
+        // bne
+        else if(instruction.startsWith('bne')) {
+            const rt = parts[1].substring(1);
+            const rs = parts[2].substring(1);
+            const target = parts[3];
+            if (this.registers[rs] !== this.registers[rt]) {
+                this.pc = this.labels[target];
+            }
+        }
+
+        // bgez
+        else if(instruction.startsWith('bgez')) {
+            const reg = parts[1].substring(1);
+            const target = parts[2];
+            if (this.registers[reg] >= 0) {
+                this.pc = this.labels[target];
+            }
+        }
+
+        // jr
+        else if(instruction.startsWith('jr')) {
+            const target = parts[1].substring(1);
+            this.pc = this.registers[target];
+        }
+
+        // j
+        else if(instruction.startsWith('j ')) {
+            const target = parts[1];
+            this.pc = this.labels[target];
+        }
+
+        // exit using syscall
+        else if(instruction.startsWith('syscall')) {
+            return false;
+        }
+        return true;
+    }
+
+    control() {
+        this.pc = 0;
+        let status = true;
+        while (status) {
+            this.pc += 1;
+            status = this.execute(this.code[this.pc - 1]);
+        }
     }
 }
 
@@ -89,10 +156,13 @@ mips.declare('corpse: 		.word 	-1:2');
 let piece_of_code = 
 `Genesis: 
 	la		$a1, presence
-	la		$a0, in_between`;
+    jal     Genesis
+    syscall`;
 
 mips.code = piece_of_code.split('\n');
 mips.first_pass(piece_of_code);
 
-mips.execute('  la  $a1, Genesis');
-console.log(mips.registers.a1);
+mips.control();
+
+// mips.execute('  la  $a1, Genesis');
+// console.log(mips.registers.a1);
