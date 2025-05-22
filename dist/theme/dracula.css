@@ -385,3 +385,163 @@ section.has-light-background, section.has-light-background h1, section.has-light
 .reveal ul li::marker, .reveal ol li::marker {
   color: var(--r-list-bullet-color);
 }
+
+
+/*********************************************
+ * CANVAS
+ *********************************************/
+:root {
+  --dracula-background: #282a36;
+  --dracula-current-line: #44475a;
+  --dracula-foreground: #f8f8f2;
+  --dracula-cyan: #8be9fd;
+  --dracula-green: #50fa7b;
+  --dracula-purple: #bd93f9;
+  --dracula-pink: #ff79c6;
+}
+
+.canvas-container {
+  display: grid;
+  grid-template-columns: repeat(12, 30px);
+  row-gap: 6px;  
+  column-gap: 8px;
+  justify-content: center;
+  margin: 40px auto; 
+  padding: 30px;
+  background: var(--dracula-current-line);
+  border-radius: 300px; 
+  box-shadow: 0 0 30px rgba(189, 147, 249, 0.3);
+}
+
+.cell {
+  width: 30px;
+  height: 30px;
+  border: 2px solid var(--dracula-cyan);
+  background-color: var(--dracula-background);
+  border-radius: 10px; 
+  transition: all 0.3s cubic-bezier(0.6, 0, 0.4, 1); 
+  cursor: pointer;
+  position: relative;
+  margin: 2px; 
+}
+
+.cell:hover {
+  transform: scale(1.15); 
+  z-index: 2;
+  filter: brightness(1.1);
+}
+
+.cell.alive {
+  background-color: var(--dracula-green);
+  border-color: var(--dracula-purple);
+  box-shadow: 0 0 20px rgba(80, 250, 123, 0.5),
+              inset 0 0 15px rgba(189, 147, 249, 0.5);
+  animation: cell-glow 1.5s infinite alternate;
+}
+
+@keyframes cell-glow {
+  from {
+    box-shadow: 0 0 10px rgba(80, 250, 123, 0.3),
+                inset 0 0 8px rgba(189, 147, 249, 0.3);
+  }
+  to {
+    box-shadow: 0 0 25px rgba(80, 250, 123, 0.7),
+                inset 0 0 20px rgba(189, 147, 249, 0.7);
+  }
+}
+
+.cell:not(.alive)::after {
+  content: '';
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  background: var(--dracula-cyan);
+  border-radius: 50%;
+  top: 15%;
+  left: 15%;
+  opacity: 0.3;
+  filter: drop-shadow(0 0 2px var(--dracula-cyan));
+}
+
+
+/*********************************************
+ * BUTTON
+ *********************************************/
+.button {
+  position: relative;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 30px;
+  background: var(--dracula-current-line);
+  color: var(--dracula-foreground);
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  font-size: 20px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+
+  border: 2px solid rgba(255, 121, 198, 0.5);
+  background-clip: padding-box;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(
+      45deg,
+      var(--dracula-pink),
+      rgba(255, 121, 198, 0.8),
+      var(--dracula-pink)
+    );
+    border-radius: 30px;
+    z-index: -1;
+    opacity: 0.7;
+    transition: opacity 0.3s;
+    filter: brightness(1.2);
+  }
+}
+
+.button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  background: var(--dracula-background);
+  color: var(--dracula-pink);
+  text-shadow: 0 0 15px var(--dracula-pink);
+  
+  &::before {
+    opacity: 1;
+    animation: pink-glow 0.8s infinite alternate;
+    filter: brightness(1.5);
+  }
+}
+
+.button:active:not(:disabled) {
+  transform: translateY(1px);
+  background: var(--dracula-current-line);
+  box-shadow: 0 0 20px rgba(255, 121, 198, 0.4);
+}
+
+.button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  
+  &::before {
+    opacity: 0.2;
+    animation: none;
+    background: var(--dracula-pink);
+  }
+}
+
+@keyframes pink-glow {
+  0% {
+    filter: hue-rotate(0deg) brightness(1.3);
+  }
+  100% {
+    filter: hue-rotate(10deg) brightness(1.8);
+  }
+}

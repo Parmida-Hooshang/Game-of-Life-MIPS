@@ -12,6 +12,7 @@
 
 		<!-- Theme used for syntax highlighted code -->
 		<link rel="stylesheet" href="plugin/highlight/monokai.css">
+
 	</head>
 	<body>
 		<div class="reveal">
@@ -19,8 +20,22 @@
 				<section>
 					<h2>Hello!</h2>
 				</section>
+
 				<section>
 					Let's begin!
+				</section>
+
+				<section>
+					<h3>Game of Life Canvas</h3>
+					<div id="canvas" class="canvas-container"></div>
+
+					<button class="button">Load</button>
+
+					<button class="button" disabled>Start</button>
+
+					<button class="button" disabled>Next</button>
+
+					<button class="button" disabled>Reset</button>
 				</section>
 			</div>
 		</div>
@@ -30,14 +45,39 @@
 		<script src="plugin/markdown/markdown.js"></script>
 		<script src="plugin/highlight/highlight.js"></script>
 		<script>
-			// More info about initialization & config:
-			// - https://revealjs.com/initialization/
-			// - https://revealjs.com/config/
+			
+			const gsa = [
+				0x00000107,
+				0x00000000, 
+				0x000000F0,
+				0x00000000,
+				0x00000AAB, 
+				0x00000000,
+				0x000000D0,
+				0x000000F0
+			];
+
+			function renderCanvas() {
+				const container = document.getElementById('canvas');
+				container.innerHTML = '';
+
+				gsa.forEach(row => {
+					const bits = row.toString(2).padStart(32, '0').slice(-12);
+					const reversedBits = bits.split('').reverse().join('');
+
+					for (const bit of reversedBits) {
+						const cell = document.createElement('div');
+						cell.className = `cell ${bit === '1' ? 'alive' : ''}`;
+						container.appendChild(cell);
+					}
+				});
+			}
+
 			Reveal.initialize({
 				hash: true,
-
-				// Learn about plugins: https://revealjs.com/plugins/
 				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
+			}).then(() => {
+				renderCanvas(); // Generate canvas when Reveal is ready
 			});
 		</script>
 	</body>
