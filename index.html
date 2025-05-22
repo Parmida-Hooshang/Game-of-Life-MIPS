@@ -6,14 +6,17 @@
 
 		<title>Game of Life: MIPS</title>
 
+		<meta name="description" content="A MIPS assembly implementation of Conway's Game of Life ">
+		<meta name="author" content="Parmida Hooshang & Mohammad hassan Liaghat">
+
 		<link rel="stylesheet" href="dist/reset.css">
 		<link rel="stylesheet" href="dist/reveal.css">
 		<link rel="stylesheet" href="dist/theme/dracula.css">
 
 		<!-- Theme used for syntax highlighted code -->
 		<link rel="stylesheet" href="plugin/highlight/monokai.css">
-
 	</head>
+
 	<body>
 		<div class="reveal">
 			<div class="slides">
@@ -26,16 +29,25 @@
 				</section>
 
 				<section>
-					<h3>Game of Life Canvas</h3>
-					<div id="canvas" class="canvas-container"></div>
+					<h3>Where Bits Become Breath!</h3>
+					
+					<div class="gsa-canvas-wrapper">
+						<!-- Left Column -->
+						<div class="left-panel">
+							<div id="gsa-inputs" class="gsa-inputs-container"></div>
+							<div id="iterations-container" class="iterations-container"></div>
+						</div>
+						
+						<!-- Right Column -->
+						<div id="canvas" class="canvas-container"></div>
+					</div>
 
-					<button class="button">Load</button>
-
-					<button class="button" disabled>Start</button>
-
-					<button class="button" disabled>Next</button>
-
-					<button class="button" disabled>Reset</button>
+					<div>
+						<button class="button">Load</button>
+						<button class="button" disabled>Start</button>
+						<button class="button" disabled>Next</button>
+						<button class="button" disabled>Reset</button>
+					</div>
 				</section>
 			</div>
 		</div>
@@ -44,8 +56,8 @@
 		<script src="plugin/notes/notes.js"></script>
 		<script src="plugin/markdown/markdown.js"></script>
 		<script src="plugin/highlight/highlight.js"></script>
+
 		<script>
-			
 			const gsa = [
 				0x00000107,
 				0x00000000, 
@@ -61,10 +73,16 @@
 				const container = document.getElementById('canvas');
 				container.innerHTML = '';
 
+				// Create title
+				const title = document.createElement('div');
+				title.className = 'canvas-title';
+				title.textContent = 'Canvas';
+				container.appendChild(title);
+
+				// Create cells
 				gsa.forEach(row => {
 					const bits = row.toString(2).padStart(32, '0').slice(-12);
 					const reversedBits = bits.split('').reverse().join('');
-
 					for (const bit of reversedBits) {
 						const cell = document.createElement('div');
 						cell.className = `cell ${bit === '1' ? 'alive' : ''}`;
@@ -73,11 +91,45 @@
 				});
 			}
 
+			function renderGSA() {
+				const container = document.getElementById('gsa-inputs');
+				container.innerHTML = ''; 
+
+				// Create title
+				const title = document.createElement('div');
+				title.className = 'gsa-title';
+				title.textContent = 'GSA';
+				container.appendChild(title);
+
+				// Create input fields
+				gsa.forEach((row, index) => {
+					const input = document.createElement('input');
+					input.className = 'input-field';
+					input.value = `0x${row.toString(16).padStart(8, '0').toUpperCase()}`;
+					input.dataset.row = index;
+					container.appendChild(input);
+				});
+			}
+
+			function renderIters() {
+				const container = document.getElementById('iterations-container');
+				container.innerHTML = '';
+				
+				// Create input field
+				const input = document.createElement('input');
+				input.className = 'input-field';
+				input.id = 'stepCount';
+				input.placeholder = 'Steps';
+				container.appendChild(input);
+			}
+
 			Reveal.initialize({
 				hash: true,
 				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
 			}).then(() => {
-				renderCanvas(); // Generate canvas when Reveal is ready
+				renderCanvas();
+				renderGSA();
+				renderIters();
 			});
 		</script>
 	</body>

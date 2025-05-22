@@ -47,6 +47,13 @@ section.has-light-background, section.has-light-background h1, section.has-light
   --r-selection-color: #fff;
   --r-overlay-element-bg-color: 240, 240, 240;
   --r-overlay-element-fg-color: 0, 0, 0;
+  --dracula-background: #282a36;
+  --dracula-current-line: #44475a;
+  --dracula-foreground: #f8f8f2;
+  --dracula-cyan: #8be9fd;
+  --dracula-green: #50fa7b;
+  --dracula-purple: #bd93f9;
+  --dracula-pink: #ff79c6;
 }
 
 .reveal-viewport {
@@ -390,27 +397,32 @@ section.has-light-background, section.has-light-background h1, section.has-light
 /*********************************************
  * CANVAS
  *********************************************/
-:root {
-  --dracula-background: #282a36;
-  --dracula-current-line: #44475a;
-  --dracula-foreground: #f8f8f2;
-  --dracula-cyan: #8be9fd;
-  --dracula-green: #50fa7b;
-  --dracula-purple: #bd93f9;
-  --dracula-pink: #ff79c6;
-}
-
 .canvas-container {
+  position: relative;
   display: grid;
   grid-template-columns: repeat(12, 30px);
-  row-gap: 6px;  
-  column-gap: 8px;
+  gap: 8px;
   justify-content: center;
-  margin: 40px auto; 
-  padding: 30px;
+  margin: 0px auto; 
+  padding: 80px 30px 30px; 
   background: var(--dracula-current-line);
-  border-radius: 300px; 
+  border-radius: 15px; 
   box-shadow: 0 0 30px rgba(189, 147, 249, 0.3);
+}
+
+.canvas-title {
+  position: absolute;
+  top: 3.5%;
+  left: 50%;
+  transform: translateX(-50%);
+  color: var(--dracula-cyan);
+  font-family: 'Courier New', monospace;
+  font-size: 1em;
+  font-weight: bold;
+  text-shadow: 0 0 10px rgba(139, 233, 253, 0.3);
+  width: 100%;
+  text-align: center;
+  pointer-events: none;
 }
 
 .cell {
@@ -545,3 +557,156 @@ section.has-light-background, section.has-light-background h1, section.has-light
     filter: hue-rotate(10deg) brightness(1.8);
   }
 }
+
+/*********************************************
+ * INPUT FIELD
+ *********************************************/
+.input-field {
+  /* Base style */
+  position: relative;
+  text-align: center;
+  padding: 12px 20px;
+  color: var(--dracula-pink);
+  border: 2px solid var(--dracula-pink);
+  border-radius: 25px;
+  background: var(--dracula-current-line);
+  color: var(--dracula-foreground);
+  font-family: 'Courier New', monospace;
+  font-size: 16px;
+  font-weight: bold;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  outline: none;
+  width: 300px;
+  box-shadow: 0 0 15px rgba(189, 147, 249, 0.1);
+  
+  /* Glowing effect layer */
+  &::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    border-radius: 25px;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+}
+
+/* Hover State */
+.input-field:hover:not(:disabled) {
+  border-color: var(--dracula-purple);
+  box-shadow: 0 0 25px rgba(255, 121, 198, 0.2);
+}
+
+/* Focus/Active State */
+.input-field:focus {
+  border-color: transparent;
+  background: var(--dracula-background);
+  animation: input-glow 1.5s infinite alternate;
+  border-color: var(--dracula-cyan);
+  &::before {
+    opacity: 1;
+    background: linear-gradient(
+      45deg,
+      var(--dracula-pink),
+      var(--dracula-purple),
+      var(--dracula-cyan)
+    );
+  }
+}
+
+/* Disabled State */
+.input-field:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  border-color: var(--dracula-current-line);
+  background: var(--dracula-background);
+  
+  &::placeholder {
+    color: var(--dracula-foreground);
+    opacity: 0.7;
+  }
+}
+
+@keyframes input-glow {
+  from {
+    box-shadow: 0 0 10px rgba(255, 121, 198, 0.3),
+                0 0 20px rgba(189, 147, 249, 0.2);
+  }
+  to {
+    box-shadow: 0 0 25px var(--dracula-purple),
+                0 0 35px var(--dracula-purple);
+  }
+}
+
+/* Placeholder styling */
+.input-field::placeholder {
+  color: var(--dracula-cyan);
+  opacity: 0.6;
+  text-align: center;
+  font-style: italic;
+}
+
+/*********************************************
+ * GSA & Canvas & Iters Wrapper
+ *********************************************/
+.gsa-canvas-wrapper {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  align-items: stretch; 
+  margin: 30px auto;
+  max-width: 100px;
+}
+
+.gsa-title {
+  color: var(--dracula-pink);
+  font-family: 'Courier New', monospace;
+  font-size: 1em;
+  font-weight: bold;
+  text-align: center;
+  text-shadow: 0 0 10px rgba(255, 121, 198, 0.3);
+}
+
+.gsa-inputs-container {
+  padding: 3px 2px 2px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 15px 20px 20px;
+  background: var(--dracula-current-line);
+  border-radius: 15px;
+  box-shadow: 0 0 30px rgba(189, 147, 249, 0.2);
+}
+
+.gsa-inputs-container .input-field {
+  margin: 0.5px 0;
+  width: 100px;
+  height: 3px;
+  padding: 10px 15px;
+  font-size: 14px;
+}
+
+.left-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 300px;
+}
+
+.iterations-container {
+  background: var(--dracula-current-line);
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 0 30px rgba(189, 147, 249, 0.3);
+  display: flex;
+  justify-content: center;
+}
+
+.iterations-container .input-field {
+  width: 100%;
+  margin: 0;
+}
+
