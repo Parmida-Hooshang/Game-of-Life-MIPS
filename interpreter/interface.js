@@ -1,7 +1,7 @@
 import { data_segment, load_code, next_code, interpreter } from "./asmcode.js";
 import { Interpreter } from "./interpreter.js";
 
-function load(GSA, steps) {
+export function load(GSA, steps) {
     interpreter.mips = new Interpreter();
 
     for(let line of data_segment.split('\n')) {
@@ -30,7 +30,7 @@ function load(GSA, steps) {
     };
 }
 
-function tomorrow(GSA) {
+export function tomorrow(GSA) {
 
     for (let i = 0; i < 8; i++) {
         interpreter.mips.memory[interpreter.mips.data_labels["presence"] + i * 4] = GSA[i];
@@ -49,10 +49,10 @@ function tomorrow(GSA) {
     return next;
 }
 
-const arr = [7,6,0,0,0,0,0,0];
-let result = load(arr, 8);
-console.log(result.corpse);
-console.log(result.days);
+//const arr = [7,6,0,0,0,0,0,0];
+//let result = load(arr, 8);
+//console.log(result.corpse);
+//console.log(result.days);
 
-result = tomorrow(arr);
-console.log(result);
+//result = tomorrow(arr);
+//console.log(result);

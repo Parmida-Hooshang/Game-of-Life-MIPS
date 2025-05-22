@@ -443,6 +443,13 @@ section.has-light-background, section.has-light-background h1, section.has-light
   filter: brightness(1.1);
 }
 
+.cell.test {
+  background-color: var(--dracula-green);
+  border-color: var(--dracula-purple);
+  box-shadow: 0 0 20px rgba(80, 250, 123, 0.5),
+              inset 0 0 15px rgba(189, 147, 249, 0.5);
+}
+
 .cell.alive {
   background-color: var(--dracula-green);
   border-color: var(--dracula-purple);
@@ -475,6 +482,51 @@ section.has-light-background, section.has-light-background h1, section.has-light
   filter: drop-shadow(0 0 2px var(--dracula-cyan));
 }
 
+.cell.corpse {
+  background-color: #8A0707;
+  border-color: #470000 !important;
+  box-shadow: 0 0 25px rgba(138, 7, 7, 0.6),
+              inset 0 0 15px rgba(71, 0, 0, 0.7);
+  animation: blood-pulse 2s infinite alternate;
+}
+
+
+.cell.corpse::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent 45%,
+    rgba(255, 0, 0, 0.3) 50%,
+    transparent 55%
+  );
+  transform: rotate(45deg);
+  animation: blood-flow 4s linear infinite;
+}
+
+@keyframes blood-pulse {
+  from {
+    filter: brightness(0.8);
+    box-shadow: 0 0 15px rgba(138, 7, 7, 0.4);
+  }
+  to {
+    filter: brightness(1.2);
+    box-shadow: 0 0 35px rgba(138, 7, 7, 0.8);
+  }
+}
+
+@keyframes blood-flow {
+  from {
+    transform: rotate(45deg) translateY(-100%);
+  }
+  to {
+    transform: rotate(45deg) translateY(100%);
+  }
+}
 
 /*********************************************
  * BUTTON

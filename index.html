@@ -35,7 +35,7 @@
 						<!-- Left Column -->
 						<div class="left-panel">
 							<div id="gsa-inputs" class="gsa-inputs-container"></div>
-							<div id="iterations-container" class="iterations-container"></div>
+							<div id="step-count" class="iterations-container"></div>
 						</div>
 						
 						<!-- Right Column -->
@@ -57,8 +57,13 @@
 		<script src="plugin/markdown/markdown.js"></script>
 		<script src="plugin/highlight/highlight.js"></script>
 
+		<script type="module">
+			import { load } from "./interpreter/interface.js";
+			window.Interface = { load };
+		</script>
+
 		<script>
-			const gsa = [
+			let gsa = [
 				0x00000107,
 				0x00000000, 
 				0x000000F0,
@@ -68,6 +73,19 @@
 				0x000000D0,
 				0x000000F0
 			];
+
+			let corpse = [
+				0x00000000,
+				0x00000000, 
+				0x00000000,
+				0x00000000,
+				0x00000000, 
+				0x00000000,
+				0x00000000,
+				0x00000000
+			];
+
+			let count = 0;
 
 			function renderCanvas() {
 				const container = document.getElementById('canvas');
@@ -80,12 +98,27 @@
 				container.appendChild(title);
 
 				// Create cells
-				gsa.forEach(row => {
-					const bits = row.toString(2).padStart(32, '0').slice(-12);
-					const reversedBits = bits.split('').reverse().join('');
-					for (const bit of reversedBits) {
+				gsa.forEach((row, rowIndex) => {
+					// Get corpse data for this row
+					const corpseRow = corpse[rowIndex];
+					
+					// Convert to 12-bit binary 
+					const rowBits = row.toString(2).padStart(12, '0').slice(-12).split('').reverse().join('');
+					const corpseBits = corpseRow.toString(2).padStart(12, '0').slice(-12).split('').reverse().join('');
+
+					// Create cells
+					for (let colIndex = 0; colIndex < 12; colIndex++) {
 						const cell = document.createElement('div');
-						cell.className = `cell ${bit === '1' ? 'alive' : ''}`;
+						cell.className = 'cell';
+						
+						if (corpseBits[colIndex] === '1') {
+							cell.classList.add('corpse');
+						} 
+
+						else if (rowBits[colIndex] === '1') {
+							cell.classList.add('alive');
+						}
+
 						container.appendChild(cell);
 					}
 				});
@@ -112,7 +145,7 @@
 			}
 
 			function renderIters() {
-				const container = document.getElementById('iterations-container');
+				const container = document.getElementById('step-count');
 				container.innerHTML = '';
 				
 				// Create input field
@@ -131,6 +164,30 @@
 				document.querySelectorAll('.input-field').forEach(input => {
 					input.disabled = true;
 				});
+
+				const stepCount = document.getElementById('stepCount').value;
+				
+				// Get all GSA input values
+				const gsaInputs = document.querySelectorAll('#gsa-inputs .input-field');
+				const newGsa = Array.from(gsaInputs).map(input => {
+					// Convert hex string to number 
+					const hexValue = input.value.startsWith('0x') 
+						? input.value.substring(2) 
+						: input.value;
+					return parseInt(hexValue, 16);
+				});
+	
+				const result = window.Interface.load(newGsa, stepCount);
+	
+				// Update game state
+				gsa = newGsa;
+				corpse = result.corpse;
+				count = result.days;
+
+				console.log(corpse);
+				
+				// Update the canvas
+				renderCanvas();
 			}
 
 			function handleStart() {
