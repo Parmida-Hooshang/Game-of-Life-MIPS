@@ -1,3 +1,9 @@
+import { Interpreter } from "./interpreter.js";
+
+export const interpreter = {
+    mips: new Interpreter()
+};
+
 export const data_segment =
     `origin: 		.space	32
     presence: 		.space	32
@@ -7,7 +13,7 @@ export const data_segment =
     days:			.space	1
     iterations:		.space	1`;
 
-export const mips_code = 
+const mips_code = 
     `Pulse:
         la	$t3, presence
         add	$t4, $zero, $a0
@@ -361,5 +367,10 @@ export const load_code =
 	la		$a1, presence
 	la		$a0, origin
 	jal 	Resurrection
+    syscall
+    ` + mips_code;
+
+export const next_code =
+    `jal 	Tomorrow
     syscall
     ` + mips_code;
