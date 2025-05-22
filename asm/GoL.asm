@@ -4,13 +4,13 @@
 #########################################################
 
 .data
-origin: 		.word	1, 2, 3, 4, 5, 6, 7, 8
+origin: 		.word	7, 6, 0, 0, 0, 0, 0, 0
 presence: 		.space	32
 in_between:		.space 	32
 corpse: 		.word 	-1:8
 everlasting:	.space 	1
 days:			.space	1
-iterations:		.byte	5:1
+iterations:		.byte	8:1
 
 newline:		.asciiz	"\n"
 msg1:			.asciiz	"GSA:\n"
@@ -27,13 +27,13 @@ msg2:			.asciiz	"Corpse Array:\n"
 #########################################################
 Genesis: 
 	la		$a1, presence
-	la		$a0, in_between
+	la		$a0, origin
 	jal 	Resurrection		# presence = origin
 	
 	jal 	Crystal_ball
 
 	la		$a1, presence
-	la		$a0, in_between
+	la		$a0, origin
 	jal 	Resurrection		# presence = origin
 
 	# iterations -> days
@@ -44,13 +44,6 @@ Genesis:
 	addi	$s0, $zero, 0		# s0 = day counter
 	
 _flow:
-	beq		$s0, $s5, _eternity	# if gone through all days
-	
-	jal 	Tomorrow
-
-	la		$a1, presence
-	la		$a0, in_between
-	jal 	Resurrection		# presence = in_between
 
 	# print presence
 	addi 	$v0, $zero, 4
@@ -58,7 +51,7 @@ _flow:
 	syscall
 
 	addi 	$t2, $zero, 0
-	addi 	$t3, $zero, 7
+	addi 	$t3, $zero, 8
 	la 		$t4, presence
 
 _print1:
@@ -87,7 +80,7 @@ _end1:
 	syscall
 
 	addi 	$t2, $zero, 0
-	addi 	$t3, $zero, 7
+	addi 	$t3, $zero, 8
 	la 		$t4, corpse
 
 _print2:
@@ -109,6 +102,14 @@ _end2:
 	addi 	$v0, $zero, 4
 	la 		$a0, newline
 	syscall
+
+	beq		$s0, $s5, _eternity	# if gone through all days
+	
+	jal 	Tomorrow
+
+	la		$a1, presence
+	la		$a0, in_between
+	jal 	Resurrection		# presence = in_between
 
 	addi 	$s0, $s0, 1
 	j 		_flow
@@ -390,33 +391,48 @@ _end_proc_row:
 #########################################################
 Physician:
 	addi	$t2, $zero, 0	# t2 = x counter
-	addi	$t3, $zero, 0	# t3 = y counter
 	addi	$t4, $zero, 8	# t4 = x limit
 	addi	$t5, $zero, 12	# t5 = y limit
 
 _check1:
 	beq		$t2, $t4, _endcheck1	# x is out of range
 	
+	addi	$t3, $zero, 0	# t3 = y counter
 _check2:
 	beq 	$t3, $t5, _endcheck2	# y is out of range
 
 	# call pulse and see if it's alive	
 	addi	$a0, $t2, 0
 	addi	$a1, $t3, 0
+	
+	addi	$sp, $sp, -20
+	sw		$ra, 0($sp)
+	sw		$t2, 4($sp)
+	sw		$t3, 8($sp)
+	sw		$t4, 12($sp)
+	sw		$t5, 16($sp)
+
 	jal 	Pulse
+
+	lw		$ra, 0($sp)
+	lw		$t2, 4($sp)
+	lw		$t3, 8($sp)
+	lw		$t4, 12($sp)
+	lw		$t5, 16($sp)
+	addi	$sp, $sp, 20
 
 	beq		$v0, $zero, _skipcb		# if it's dead
 
 	addi 	$t7, $zero, 1
-	sllv 	$t7, $t7, $t2
+	sllv 	$t7, $t7, $t3
 	nor 	$t7, $t7, $zero			# 11..101..11
-	la		$t8, presence
-	sll		$t9, $t2, 4				# which word * 4
-	add	$t8, $t8, $t9			# t8 = address of the word
+	la		$t8, corpse
+	sll		$t9, $t2, 2				# which word * 4
+	add		$t8, $t8, $t9			# t8 = address of the word
 	lw		$t8, 0($t8)
 	and 	$t8, $t8, $t7
-	la		$t7, presence
-	add	$t7, $t7, $t9
+	la		$t7, corpse
+	add		$t7, $t7, $t9
 	sw		$t8, 0($t7)				# update the word
 
 _skipcb:
@@ -429,7 +445,7 @@ _endcheck2:
 	j		_check1
 	
 _endcheck1:
-	jr $ra
+	jr 		$ra
 
 
 #########################################################
@@ -440,7 +456,11 @@ _endcheck1:
 #########################################################
 Crystal_ball:
 	# unset corpses based on the original array
+	addi	$sp, $sp, -4
+	sw		$ra, 0($sp)
 	jal 	Physician
+	lw		$ra, 0($sp)
+	addi	$sp, $sp, 4
 
 	la 		$t0, iterations		
 	lb 		$t0, 0($t0)			# t0 = max iterations
@@ -455,30 +475,35 @@ _loopcb:
 	sw 		$ra, 8($sp)
 
 	jal 	Tomorrow
-
-	lw 		$ra, 8($sp)
-	lw 		$t1, 4($sp)
-	lw 		$t0, 0($sp)
-	addi 	$sp, $sp, 12
 	
 	la		$a1, presence
 	la		$a0, in_between
 	jal 	Resurrection		# presence = origin
 
 	# unset corpses based on the obtained array
+	addi	$sp, $sp, -4
+	sw		$ra, 0($sp)
 	jal 	Physician
+	lw		$ra, 0($sp)
+	addi	$sp, $sp, 4
 
 	la 		$t2, everlasting
 	lb 		$t2, 0($t2)
 	addi 	$t3, $zero, 1
 
+	lw 		$ra, 8($sp)
+	lw 		$t1, 4($sp)
+	lw 		$t0, 0($sp)
+	addi 	$sp, $sp, 12
+
 	addi 	$t1, $t1, 1
 	bne 	$t2, $t3, _loopcb	# if we have changes, continue the loop
 
-_endcb:
-	la 		$t0, days
-	sb 		$t1, 0($t0)
+	addi	$t1, $t1, -1		# reached a stable state
 
+_endcb:
+	la 		$t0, days			
+	sb 		$t1, 0($t0)
 	jr 		$ra
 
 #########################################################
@@ -493,10 +518,10 @@ Resurrection:
 
 _move_element:
 	beq	$t0, $t1, _end_resurrection
-	lw	$t2, 0($a1)
-	sw	$t2, 0($a0)
-	addi	$a0, $a0, 4
+	lw	$t2, 0($a0)
+	sw	$t2, 0($a1)
 	addi	$a1, $a1, 4
+	addi	$a0, $a0, 4
 	addi	$t0, $t0, 1
 	j	_move_element
 
