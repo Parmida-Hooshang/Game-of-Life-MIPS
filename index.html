@@ -43,10 +43,10 @@
 					</div>
 
 					<div>
-						<button class="button">Load</button>
-						<button class="button" disabled>Start</button>
-						<button class="button" disabled>Next</button>
-						<button class="button" disabled>Reset</button>
+						<button id="load-btn" class="button">Load</button>
+						<button id="start-btn" class="button" disabled>Start</button>
+						<button id="next-btn" class="button" disabled>Next</button>
+						<button id="reset-btn" class="button" disabled>Reset</button>
 					</div>
 				</section>
 			</div>
@@ -123,13 +123,56 @@
 				container.appendChild(input);
 			}
 
-			Reveal.initialize({
-				hash: true,
-				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
-			}).then(() => {
-				renderCanvas();
-				renderGSA();
-				renderIters();
+			function handleLoad() {
+				document.getElementById('load-btn').disabled = true;
+				document.getElementById('start-btn').disabled = false;
+				document.getElementById('next-btn').disabled = false;
+				document.getElementById('reset-btn').disabled = false;
+				document.querySelectorAll('.input-field').forEach(input => {
+					input.disabled = true;
+				});
+			}
+
+			function handleStart() {
+				document.getElementById('load-btn').disabled = true;
+				document.getElementById('start-btn').disabled = true;
+				document.getElementById('next-btn').disabled = true;
+				document.getElementById('reset-btn').disabled = false;
+			}
+
+			function handleNext() {
+				document.getElementById('load-btn').disabled = true;
+				document.getElementById('start-btn').disabled = true;
+				document.getElementById('next-btn').disabled = false;
+				document.getElementById('reset-btn').disabled = false;
+			}
+
+			function handleReset() {
+				document.getElementById('load-btn').disabled = false;
+				document.getElementById('start-btn').disabled = true;
+				document.getElementById('next-btn').disabled = true;
+				document.getElementById('reset-btn').disabled = true;
+				document.querySelectorAll('.input-field').forEach(input => {
+					input.disabled = false;
+				});
+			}
+
+			document.addEventListener('DOMContentLoaded', () => {
+				// Button event listeners
+				document.getElementById('load-btn').addEventListener('click', handleLoad);
+				document.getElementById('start-btn').addEventListener('click', handleStart);
+				document.getElementById('next-btn').addEventListener('click', handleNext);
+				document.getElementById('reset-btn').addEventListener('click', handleReset);
+
+				// Initialize Reveal
+				Reveal.initialize({
+					hash: true,
+					plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
+				}).then(() => {
+					renderCanvas();
+					renderGSA();
+					renderIters();
+				});
 			});
 		</script>
 	</body>
