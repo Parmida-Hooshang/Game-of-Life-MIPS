@@ -1,4 +1,4 @@
-class Interpreter {
+export class Interpreter {
     constructor() {
         this.registers = {
             zero: 0, at: 0, v0: 0, v1: 0, a0: 0, a1: 0, a2: 0, a3: 0,
@@ -8,13 +8,14 @@ class Interpreter {
         };
         this.labels = {};
         this.data_labels = {}
-        this.memory = new Array(1024).fill(0);
+        this.memory = new Array(1024 * 4).fill(0);
         this.code = [];
         this.pc = 0;
         this.memory_pointer = 0;
     }
 
     declare(data) {
+        data = data.trim();
         const parts = data.split(/[\s]+/);
         const name = parts[0].slice(0,-1);
         const type = parts[1];
@@ -27,15 +28,23 @@ class Interpreter {
             const tmp = values.split(':');
             const value = parseInt(tmp[0]);
             const cnt = parseInt(tmp[1]);
+            let step = 1;
+            if (type === ".word") {
+                step *= 4;
+            }
             for (let i = 0; i < cnt; i++) {
                 this.memory[this.memory_pointer] = value;
-                this.memory_pointer += 1;
+                this.memory_pointer += step;
             }
         }
         else {
+            let step = 1;
+            if (type === ".word") {
+                step *= 4;
+            }
             for (let value of values.split(',')) {
                 this.memory[this.memory_pointer] = parseInt(value);
-                this.memory_pointer += 1;
+                this.memory_pointer += step;
             }
         }
         
@@ -66,7 +75,7 @@ class Interpreter {
         }
 
         // la
-        else if(instruction.startsWith('la ')) {
+        else if(instruction.startsWith('la')) {
             const dest = parts[1].substring(1);
             const label = parts[2];
             this.registers[dest] = this.data_labels[label];
@@ -75,7 +84,7 @@ class Interpreter {
         // ------------------ Arithmetic ------------------ //
 
         // addi
-        else if (instruction.startsWith('addi ')) {
+        else if (instruction.startsWith('addi')) {
             const rt = parts[1].substring(1);
             const rs = parts[2].substring(1);
             const imm = parseInt(parts[3]);
@@ -83,7 +92,7 @@ class Interpreter {
         }
 
         // add
-        else if (instruction.startsWith('add ')) {
+        else if (instruction.startsWith('add')) {
             const rd = parts[1].substring(1);
             const rs = parts[2].substring(1);
             const rt = parts[3].substring(1);
@@ -92,24 +101,24 @@ class Interpreter {
 
         // -------------------- Logical -------------------- //
 
-        // sll
-        else if (instruction.startsWith('sll ')) {
-            const rt = parts[1].substring(1);
-            const rs = parts[2].substring(1);
-            const imm = parseInt(parts[3]);
-            this.registers[rt] = this.registers[rs] << imm;
-        }
-
         // sllv
-        else if (instruction.startsWith('sllv ')) {
+        else if (instruction.startsWith('sllv')) {
             const rd = parts[1].substring(1);
             const rs = parts[2].substring(1);
             const rt = parts[3].substring(1);
             this.registers[rd] = this.registers[rs] << this.registers[rt];
         }
 
+        // sll
+        else if (instruction.startsWith('sll')) {
+            const rt = parts[1].substring(1);
+            const rs = parts[2].substring(1);
+            const imm = parseInt(parts[3]);
+            this.registers[rt] = this.registers[rs] << imm;
+        }
+
         // xor
-        else if (instruction.startsWith('xor ')) {
+        else if (instruction.startsWith('xor')) {
             const rd = parts[1].substring(1);
             const rs = parts[2].substring(1);
             const rt = parts[3].substring(1);
@@ -117,7 +126,7 @@ class Interpreter {
         }
 
         // and
-        else if (instruction.startsWith('and ')) {
+        else if (instruction.startsWith('and')) {
             const rd = parts[1].substring(1);
             const rs = parts[2].substring(1);
             const rt = parts[3].substring(1);
@@ -125,7 +134,7 @@ class Interpreter {
         }
 
         // or
-        else if (instruction.startsWith('or ')) {
+        else if (instruction.startsWith('or')) {
             const rd = parts[1].substring(1);
             const rs = parts[2].substring(1);
             const rt = parts[3].substring(1);
@@ -133,7 +142,7 @@ class Interpreter {
         }
 
         // nor
-        else if (instruction.startsWith('nor ')) {
+        else if (instruction.startsWith('nor')) {
             const rd = parts[1].substring(1);
             const rs = parts[2].substring(1);
             const rt = parts[3].substring(1);
@@ -143,39 +152,29 @@ class Interpreter {
         // -------------------- Memory -------------------- //
 
         // load
-        else if (instruction.startsWith('lw ') || instruction.startsWith('lb')) {
+        else if (instruction.startsWith('lw') || instruction.startsWith('lb')) {
             const rt = parts[1].substring(1);
             const offset = parseInt(parts[2].split(/[\(\)]+/)[0])/4;
             // loading bytes from non-word-aligned addresses is not supported yet.
             const rs = parts[2].split(/[\(\)]+/)[1].substring(1);
 
-            if (rs === "sp") {
-                this.registers[rt] = this.memory[this.registers[rs]/4 + offset];
-            }
-            else {
-                this.registers[rt] = this.memory[this.registers[rs] + offset];
-            }
+            this.registers[rt] = this.memory[this.registers[rs] + offset];
         }
 
         // store
-        else if (instruction.startsWith('sw ') || instruction.startsWith('sb')) {
+        else if (instruction.startsWith('sw') || instruction.startsWith('sb')) {
             const rt = parts[1].substring(1);
             const offset = parseInt(parts[2].split(/[\(\)]+/)[0])/4;
             // storing bytes in non-word-aligned addresses is not supported yet.
             const rs = parts[2].split(/[\(\)]+/)[1].substring(1);
 
-            if(rs === "sp") {
-                this.memory[this.registers[rs]/4 + offset] = this.registers[rt];
-            }
-            else {
-                this.memory[this.registers[rs] + offset] = this.registers[rt];
-            }
+            this.memory[this.registers[rs] + offset] = this.registers[rt];
         }
 
         // ----------------- Control Path ----------------- //
 
         // beq
-        else if(instruction.startsWith('beq ')) {
+        else if(instruction.startsWith('beq')) {
             const rt = parts[1].substring(1);
             const rs = parts[2].substring(1);
             const target = parts[3];
@@ -185,7 +184,7 @@ class Interpreter {
         }
 
         // bne
-        else if(instruction.startsWith('bne ')) {
+        else if(instruction.startsWith('bne')) {
             const rt = parts[1].substring(1);
             const rs = parts[2].substring(1);
             const target = parts[3];
@@ -195,7 +194,7 @@ class Interpreter {
         }
 
         // bgez
-        else if(instruction.startsWith('bgez ')) {
+        else if(instruction.startsWith('bgez')) {
             const reg = parts[1].substring(1);
             const target = parts[2];
             if (this.registers[reg] >= 0) {
@@ -204,20 +203,20 @@ class Interpreter {
         }
 
         // jal
-        else if(instruction.startsWith('jal ')) {
+        else if(instruction.startsWith('jal')) {
             const target = parts[1];
             this.registers.ra = this.pc;
             this.pc = this.labels[target];
         }
 
         // jr
-        else if(instruction.startsWith('jr ')) {
+        else if(instruction.startsWith('jr')) {
             const target = parts[1].substring(1);
             this.pc = this.registers[target];
         }
 
         // j
-        else if(instruction.startsWith('j ')) {
+        else if(instruction.startsWith('j')) {
             const target = parts[1];
             this.pc = this.labels[target];
         }
@@ -228,7 +227,7 @@ class Interpreter {
         }
 
         else{
-            console.log("not defined!!!")
+            console.log(instruction)
         }
 
         return true;
@@ -246,33 +245,3 @@ class Interpreter {
         }
     }
 }
-
-// Usage:
-const mips = new Interpreter();
-mips.execute('addi $t0, $zero, 5');
-console.log(mips.registers.t0);
-
-// There shouldn't be any whitespace between values. Not supported yet
-let data_segment =
-`origin: 		.word	1,2,3,4,5,6,7,8
-presence: 		.space	3
-corpse: 		.word 	-1:2`;
-
-for(let line of data_segment.split('\n')) {
-    mips.declare(line);
-}
-
-let piece_of_code = 
-`Genesis: 
-    addi    $a0, $zero, 25
-    addi    $a1, $zero, 74
-    nor     $a2, $a0, $a1
-    syscall`;
-
-mips.code = piece_of_code.split('\n');
-mips.first_pass(piece_of_code);
-
-mips.control();
-
-// mips.execute('  la  $a1, Genesis');
-// console.log(mips.registers.a1);
