@@ -805,3 +805,10 @@ section.has-light-background, section.has-light-background h1, section.has-light
   transform-origin: center;
 }
 
+.code-highlight {
+  color: #66d9ef;
+  font-family: 'Courier New', Courier, monospace;
+  letter-spacing: -3px;
+  font-size: 0.87em;
+  font-weight: bold;
+}
