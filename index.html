@@ -153,6 +153,33 @@
 					</section>
 				</section>
 
+				<section id="resurrection" data-auto-animate>
+					<h4>The Miracle of Resurrection</h4>
+					<div style="text-align: left;">
+						<p class="paragraph">The <code style="font-weight: bold; color: #bf79db;">Resurrection</code> performs the sacred transfer,
+							making the next generation's GSA become the new current reality.
+						</p>
+					</div>
+					<pre data-id="code-animation"><code class="hljs mips" data-trim
+						data-line-numbers="1,2,3,4,5,6,7,8,9,10,11,12,13,14,15"><script type="text/template">
+						Resurrection:
+							addi	$t0, $zero, 0
+							addi	$t1, $zero, 8
+
+						_move_element:
+							beq		$t0, $t1, _end_resurrection
+							lw		$t2, 0($a0)
+							sw		$t2, 0($a1)
+							addi	$a1, $a1, 4
+							addi	$a0, $a0, 4
+							addi	$t0, $t0, 1
+							j	_move_element
+
+						_end_resurrection:
+							jr 	$ra
+					</script></code></pre>
+				</section>
+
 				<section id="physician">
 					<section data-auto-animate>
 						<h4>Coming back to life</h4>
@@ -752,33 +779,6 @@
 							}
 						}
 					}
-					</script></code></pre>
-				</section>
-
-				<section id="resurrection" data-auto-animate>
-					<h4>The Miracle of Resurrection</h4>
-					<div style="text-align: left;">
-						<p class="paragraph">The <code style="font-weight: bold; color: #bf79db;">Resurrection</code> performs the sacred transfer,
-							making the next generation's GSA become the new current reality.
-						</p>
-					</div>
-					<pre data-id="code-animation"><code class="hljs mips" data-trim
-						data-line-numbers="1,2,3,4,5,6,7,8,9,10,11,12,13,14,15"><script type="text/template">
-						Resurrection:
-							addi	$t0, $zero, 0
-							addi	$t1, $zero, 8
-
-						_move_element:
-							beq		$t0, $t1, _end_resurrection
-							lw		$t2, 0($a0)
-							sw		$t2, 0($a1)
-							addi	$a1, $a1, 4
-							addi	$a0, $a0, 4
-							addi	$t0, $t0, 1
-							j	_move_element
-
-						_end_resurrection:
-							jr 	$ra
 					</script></code></pre>
 				</section>
 
