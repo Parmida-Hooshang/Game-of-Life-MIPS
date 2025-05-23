@@ -63,6 +63,17 @@
 		</script>
 
 		<script>
+			let origGsa = [
+				0x00000107,
+				0x00000000, 
+				0x000000F0,
+				0x00000000,
+				0x00000AAB, 
+				0x00000000,
+				0x000000D0,
+				0x000000F0
+			];
+
 			let gsa = [
 				0x00000107,
 				0x00000000, 
@@ -85,7 +96,11 @@
 				0x00000000
 			];
 
+			let origCount = 0;
+
 			let count = 0;
+
+			let isRunning = false;
 
 			function renderCanvas() {
 				const container = document.getElementById('canvas');
@@ -187,7 +202,7 @@
 				updateButtonStates(false, true, true, true);
 				updateInputStates(false);
 
-				const stepCount = document.getElementById('stepCount').value;
+				const stepCount = parseInt(document.getElementById('stepCount').value);
 				
 				// Get all GSA input values
 				const gsaInputs = document.querySelectorAll('#gsa-inputs .input-field');
@@ -202,8 +217,10 @@
 				const result = window.Interface.load(newGsa, stepCount);
 	
 				// Update game state
+				origGsa = newGsa;
 				gsa = newGsa;
 				corpse = result.corpse;
+				origCount = result.days;
 				count = result.days;
 
 				updateInputContents();
@@ -213,12 +230,25 @@
 			}
 
 			function handleStart() {
-				document.getElementById('load-btn').disabled = true;
-				document.getElementById('start-btn').disabled = true;
-				document.getElementById('next-btn').disabled = true;
-				document.getElementById('reset-btn').disabled = false;
+				updateButtonStates(false, false, false, true); 
+				updateInputStates(false);
+				isRunning = true;
 
-
+				const stepsToProcess = count;
+				
+				(async function processSteps() {
+					for (let i = 0; i < stepsToProcess; i++) {
+						if (!isRunning)
+							break;
+						gsa = window.Interface.tomorrow(gsa);
+						count--;
+						updateInputContents();
+						renderCanvas();
+						
+						// Add delay between steps (500ms)
+						await new Promise(resolve => setTimeout(resolve, 500));
+					}
+				})();
 			}
 
 			function handleNext() {
@@ -230,13 +260,14 @@
 			}
 
 			function handleReset() {
-				document.getElementById('load-btn').disabled = false;
-				document.getElementById('start-btn').disabled = true;
-				document.getElementById('next-btn').disabled = true;
-				document.getElementById('reset-btn').disabled = true;
-				document.querySelectorAll('.input-field').forEach(input => {
-					input.disabled = false;
-				});
+				updateButtonStates(true, false, false, false);
+				updateInputStates(true);
+				isRunning = false;
+				gsa = origGsa;
+				count = origCount;
+				corpse.fill(0);
+				renderCanvas();
+				updateInputContents();
 			}
 
 			document.addEventListener('DOMContentLoaded', () => {
