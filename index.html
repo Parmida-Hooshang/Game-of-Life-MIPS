@@ -12,6 +12,7 @@
 		<link rel="stylesheet" href="dist/reset.css">
 		<link rel="stylesheet" href="dist/reveal.css">
 		<link rel="stylesheet" href="dist/theme/dracula.css">
+		<link href="https://fonts.googleapis.com/css2?family=Nosifer&family=IM+Fell+English&display=swap" rel="stylesheet">
 
 		<!-- Theme used for syntax highlighted code -->
 		<link rel="stylesheet" href="plugin/highlight/monokai.css">
@@ -21,15 +22,13 @@
 		<div class="reveal">
 			<div class="slides">
 				<section>
-					<h2>Hello!</h2>
+					<h2>The Game of Life</h2>
+					<p class="green-highlight">Parmida Hooshang X Sina Liaghat</p>
+					<p class="paragraph" style="color: #C7253E;">Shiraz University - 2025</p>
 				</section>
 
 				<section>
-					Let's begin!
-				</section>
-
-				<section>
-					<h3>Where Bits Become Breath!</h3>
+					<h4>Where Bits Become Breath!</h4>
 					
 					<div class="gsa-canvas-wrapper">
 						<!-- Left Column -->
@@ -48,6 +47,31 @@
 						<button id="next-btn" class="button" disabled>Next</button>
 						<button id="reset-btn" class="button" disabled>Reset</button>
 					</div>
+				</section>
+
+				<section>
+					<h4>Big Bang</h4>
+					<p class="paragraph">This is how we can explain the <code>code</code></p>
+					<pre data-id="code-animation"><code class="hljs mips" data-trim
+						data-line-numbers="|1|2-4,8-10|17"><script type="text/template">
+						Genesis: 
+							la		$a1, presence
+							la		$a0, origin
+							jal 	Resurrection		# presence = origin
+							
+							jal 	Crystal_ball
+
+							la		$a1, presence
+							la		$a0, origin
+							jal 	Resurrection		# presence = origin
+
+							# iterations -> days
+							# walls -> corpse
+
+							la		$s5, days			
+							lb		$s5, 0($s5)			# s5 = days
+							addi	$s0, $zero, 0		# s0 = day counter
+					</script></code></pre>
 				</section>
 			</div>
 		</div>
