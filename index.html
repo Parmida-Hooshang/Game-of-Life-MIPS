@@ -58,8 +58,8 @@
 		<script src="plugin/highlight/highlight.js"></script>
 
 		<script type="module">
-			import { load } from "./interpreter/interface.js";
-			window.Interface = { load };
+			import { load, tomorrow } from "./interpreter/interface.js";
+			window.Interface = { load, tomorrow };
 		</script>
 
 		<script>
@@ -154,14 +154,38 @@
 				container.appendChild(input);
 			}
 
-			function handleLoad() {
-				document.getElementById('load-btn').disabled = true;
-				document.getElementById('start-btn').disabled = false;
-				document.getElementById('next-btn').disabled = false;
-				document.getElementById('reset-btn').disabled = false;
+			function updateButtonStates(enLoad, enStart, enNext, enReset) {
+				document.getElementById('load-btn').disabled = !enLoad;
+				document.getElementById('start-btn').disabled = !enStart;
+				document.getElementById('next-btn').disabled = !enNext;
+				document.getElementById('reset-btn').disabled = !enReset;
+			}
+
+			function updateInputStates(enInputs) {
 				document.querySelectorAll('.input-field').forEach(input => {
-					input.disabled = true;
+					input.disabled = !enInputs;
 				});
+			}
+
+			function updateInputContents() {
+				// Update GSA input fields
+				const gsaInputs = document.querySelectorAll('#gsa-inputs .input-field');
+				gsa.forEach((value, index) => {
+					if (gsaInputs[index]) {
+						gsaInputs[index].value = `0x${value.toString(16).padStart(8, '0').toUpperCase()}`;
+					}
+				});
+
+				// Update step count
+				const stepCountInput = document.getElementById('stepCount');
+				if (stepCountInput) {
+					stepCountInput.value = count;
+				}
+			}
+
+			function handleLoad() {
+				updateButtonStates(false, true, true, true);
+				updateInputStates(false);
 
 				const stepCount = document.getElementById('stepCount').value;
 				
@@ -182,7 +206,7 @@
 				corpse = result.corpse;
 				count = result.days;
 
-				console.log(corpse);
+				updateInputContents();
 				
 				// Update the canvas
 				renderCanvas();
@@ -193,13 +217,16 @@
 				document.getElementById('start-btn').disabled = true;
 				document.getElementById('next-btn').disabled = true;
 				document.getElementById('reset-btn').disabled = false;
+
+
 			}
 
 			function handleNext() {
-				document.getElementById('load-btn').disabled = true;
-				document.getElementById('start-btn').disabled = true;
-				document.getElementById('next-btn').disabled = false;
-				document.getElementById('reset-btn').disabled = false;
+				updateButtonStates(false, false, count >= 2, true);
+				gsa = window.Interface.tomorrow(gsa);
+				count--;
+				updateInputContents();
+				renderCanvas();
 			}
 
 			function handleReset() {
