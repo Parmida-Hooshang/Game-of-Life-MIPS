@@ -485,14 +485,14 @@
 							data-line-numbers="1,2,3,4,5,6,7,8"><script type="text/template">
 							Tomorrow:
 								addi 	$sp, $sp, -4	# Allocate stack space
-								sw 	$ra, 0($sp) 	# Save return address
+								sw 		$ra, 0($sp) 	# Save return address
 
-								la	$t0, everlasting	# Load everlasting flag address
+								la		$t0, everlasting	# Load everlasting flag address
 								addi	$t1, $zero, 1	# Assume world will stop changing
-								sb	$t1, 0($t0)		# Initialize flag (1 = no change)
+								sb		$t1, 0($t0)		# Initialize flag (1 = no change)
 
-								xor	$t0, $t0, $t0	# row index = 0
-								xor	$t1, $t1, $t1	# col index = 0
+								xor		$t0, $t0, $t0	# row index = 0
+								xor		$t1, $t1, $t1	# col index = 0
 								addi	$t2, $zero, 8 	# max rows
 								addi	$t3, $zero, 12	# max cols
 						</script></code></pre>
@@ -507,21 +507,21 @@
 						<pre data-id="code-animation"><code class="hljs mips" data-trim
 							data-line-numbers="9-16|17-24"><script type="text/template">
 								addi	$t4, $zero, 1		# Bitmask (starts at LSB)
-								la	$t5, presence		# Current generation
-								la	$t6, in_between		# Next generation
-								xor	$t7, $t7, $t7		# Current word
-								xor	$t8, $t8, $t8		# Next word
+								la		$t5, presence		# Current generation
+								la		$t6, in_between		# Next generation
+								xor		$t7, $t7, $t7		# Current word
+								xor		$t8, $t8, $t8		# Next word
 								addi	$t9, $zero, -1		# Mask inverter
 
 							_proc_row:
-								beq	$t0, $t2, _end_proc_row	# All rows done?
-								xor	$t1, $t1, $t1		# Reset column counter
+								beq		$t0, $t2, _end_proc_row	# All rows done?
+								xor		$t1, $t1, $t1		# Reset column counter
 								addi	$t4, $zero, 1		# Reset bitmask
-								lw	$t7, 0($t5)		# Load current row
-								lw	$t8, 0($t6)		# Load next row buffer
+								lw		$t7, 0($t5)		# Load current row
+								lw		$t8, 0($t6)		# Load next row buffer
 
 							_proc_col:
-								beq	$t1, $t3, _end_proc_col	# All columns done?
+								beq		$t1, $t3, _end_proc_col	# All columns done?
 								# Prepare to consult Fate...
 						</script></code></pre>
 					</section>
