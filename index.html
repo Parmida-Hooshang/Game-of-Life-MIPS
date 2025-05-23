@@ -688,100 +688,101 @@
 					</section>
 				</section>
 
-				<section id="resurrection" data-auto-animate>
-						<h4>The Miracle of Resurrection</h4>
-						<div style="text-align: left;">
-							<p class="paragraph">The <code style="font-weight: bold; color: #bf79db;">Resurrection</code> performs the sacred transfer,
-								making the next generation's GSA become the new current reality.
-							</p>
-						</div>
-						<pre data-id="code-animation"><code class="hljs mips" data-trim
-							data-line-numbers="1,2,3,4,5,6,7,8,9,10,11,12,13,14,15"><script type="text/template">
-							Resurrection:
-								addi	$t0, $zero, 0
-								addi	$t1, $zero, 8
+				<section id="interpreter" data-auto-animate>
+					<h4>The Angel</h4>
+					<div style="text-align: left;">
+						<p class="paragraph">The sacred language of the universe is only known to our javascript <span class="code-highlight"  style="color: #bf79db;">interpreter</span>. 
+							
+						</p>
+					</div>
+					<pre data-id="code-animation"><code class="hljs javascript" data-trim
+						data-line-numbers="1,2|17-19,23-24|37-39,43-44"><script type="text/template">
+						export class Interpreter {
+						constructor() {
+							this.registers = {
+								zero: 0, at: 0, v0: 0, v1: 0, a0: 0, a1: 0, a2: 0, a3: 0,
+								t0: 0, t1: 0, t2: 0, t3: 0, t4: 0, t5: 0, t6: 0, t7: 0,
+								s0: 0, s1: 0, s2: 0, s3: 0, s4: 0, s5: 0, s6: 0, s7: 0,
+								t8: 0, t9: 0, k0: 0, k1: 0, gp: 0, sp: 0, fp: 0, ra: 0
+							};
+							this.labels = {};
+							this.data_labels = {}
+							this.memory = new Array(1024 * 4).fill(0);
+							this.code = [];
+							this.pc = 0;
+							this.memory_pointer = 0;
+						}
 
-							_move_element:
-								beq		$t0, $t1, _end_resurrection
-								lw		$t2, 0($a0)
-								sw		$t2, 0($a1)
-								addi	$a1, $a1, 4
-								addi	$a0, $a0, 4
-								addi	$t0, $t0, 1
-								j	_move_element
+						declare(data) {
+							// assign memory addresses and optionally values
+							// to labels in .data
+							...
+						}
 
-							_end_resurrection:
-								jr 	$ra
-				<section>
-					<section data-auto-animate>
-						<h4>The Angel</h4>
-						<div style="text-align: left;">
-							<p class="paragraph">The sacred language of the universe is only known to our javascript <span class="code-highlight"  style="color: #bf79db;">interpreter</span>. 
-								
-							</p>
-						</div>
-						<pre data-id="code-animation"><code class="hljs javascript" data-trim
-							data-line-numbers="1,2|17-19,23-24|37-39,43-44"><script type="text/template">
-							export class Interpreter {
-							constructor() {
-								this.registers = {
-									zero: 0, at: 0, v0: 0, v1: 0, a0: 0, a1: 0, a2: 0, a3: 0,
-									t0: 0, t1: 0, t2: 0, t3: 0, t4: 0, t5: 0, t6: 0, t7: 0,
-									s0: 0, s1: 0, s2: 0, s3: 0, s4: 0, s5: 0, s6: 0, s7: 0,
-									t8: 0, t9: 0, k0: 0, k1: 0, gp: 0, sp: 0, fp: 0, ra: 0
-								};
-								this.labels = {};
-								this.data_labels = {}
-								this.memory = new Array(1024 * 4).fill(0);
-								this.code = [];
-								this.pc = 0;
-								this.memory_pointer = 0;
-							}
-
-							declare(data) {
-								// assign memory addresses and optionally values
-								// to labels in .data
-								...
-							}
-
-							first_pass() {
-								// assign addresses to labels in .code
-								this.pc = 0;
-								for (let line of this.code) {
-									if (line.includes(':')) {
-										// it's a label
-										this.labels[line.trim().slice(0,-1)] = this.pc + 1;
-										// lebels hold the address (index) of their NEXT instruction
-									}
-									this.pc += 1;
+						first_pass() {
+							// assign addresses to labels in .code
+							this.pc = 0;
+							for (let line of this.code) {
+								if (line.includes(':')) {
+									// it's a label
+									this.labels[line.trim().slice(0,-1)] = this.pc + 1;
+									// lebels hold the address (index) of their NEXT instruction
 								}
-								this.pc = 0;
+								this.pc += 1;
 							}
+							this.pc = 0;
+						}
 
-							execute(instruction) {
-								// execute arithmetic, logical, memory,
-								// and control instructions
-								...
-							}
+						execute(instruction) {
+							// execute arithmetic, logical, memory,
+							// and control instructions
+							...
+						}
 
-							control() {
-								// execute MIPS code
-								this.pc = 0;
-								// Set the stack pointer to the end of memory
-								// We assume that the stack is placed at the end of the memory array
-								this.registers.sp = 1023 * 4;
-								let status = true;
-								while (status) {
-									this.pc += 1;
-									status = this.execute(this.code[this.pc - 1]);
-								}
+						control() {
+							// execute MIPS code
+							this.pc = 0;
+							// Set the stack pointer to the end of memory
+							// We assume that the stack is placed at the end of the memory array
+							this.registers.sp = 1023 * 4;
+							let status = true;
+							while (status) {
+								this.pc += 1;
+								status = this.execute(this.code[this.pc - 1]);
 							}
 						}
-						</script></code></pre>
-					</section>
+					}
+					</script></code></pre>
 				</section>
 
-				<section>
+				<section id="resurrection" data-auto-animate>
+					<h4>The Miracle of Resurrection</h4>
+					<div style="text-align: left;">
+						<p class="paragraph">The <code style="font-weight: bold; color: #bf79db;">Resurrection</code> performs the sacred transfer,
+							making the next generation's GSA become the new current reality.
+						</p>
+					</div>
+					<pre data-id="code-animation"><code class="hljs mips" data-trim
+						data-line-numbers="1,2,3,4,5,6,7,8,9,10,11,12,13,14,15"><script type="text/template">
+						Resurrection:
+							addi	$t0, $zero, 0
+							addi	$t1, $zero, 8
+
+						_move_element:
+							beq		$t0, $t1, _end_resurrection
+							lw		$t2, 0($a0)
+							sw		$t2, 0($a1)
+							addi	$a1, $a1, 4
+							addi	$a0, $a0, 4
+							addi	$t0, $t0, 1
+							j	_move_element
+
+						_end_resurrection:
+							jr 	$ra
+					</script></code></pre>
+				</section>
+
+				<section id="interface">
 					<section data-auto-animate>
 						<h4>The Prophet</h4>
 						<div style="text-align: left;">
