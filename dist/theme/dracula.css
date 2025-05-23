@@ -39,7 +39,7 @@ section.has-light-background, section.has-light-background h1, section.has-light
   --r-heading2-size: 2.11em;
   --r-heading3-size: 1.55em;
   --r-heading4-size: 1em;
-  --r-code-font: Fira Code, Menlo, Consolas, Monaco, Liberation Mono, Lucida Console, monospace;
+  --r-code-font: Courier New, monospace;
   --r-link-color: #FF79C6;
   --r-link-color-dark: rgb(255, 64.6, 174.0089552239);
   --r-link-color-hover: #8BE9FD;
@@ -97,13 +97,13 @@ section.has-light-background, section.has-light-background h1, section.has-light
 .reveal h6 {
   margin: var(--r-heading-margin);
   color: var(--r-heading-color);
-  font-family: var(--r-heading-font);
-  font-weight: var(--r-heading-font-weight);
-  line-height: var(--r-heading-line-height);
-  letter-spacing: var(--r-heading-letter-spacing);
-  text-transform: var(--r-heading-text-transform);
+  font-family: 'Nosifer', cursive;
+  transform: scaleX(0.8);
+  transform-origin: center;
+  display: inline block;
+  letter-spacing: -2px;
   text-shadow: var(--r-heading-text-shadow);
-  word-wrap: break-word;
+  line-height: 1.1;
 }
 
 .reveal h1 {
@@ -111,7 +111,7 @@ section.has-light-background, section.has-light-background h1, section.has-light
 }
 
 .reveal h2 {
-  font-size: var(--r-heading2-size);
+  font-size: 1.8em;
 }
 
 .reveal h3 {
@@ -229,6 +229,7 @@ section.has-light-background, section.has-light-background h1, section.has-light
   text-align: left;
   font-size: 0.55em;
   font-family: var(--r-code-font);
+  font-weight: bold;
   line-height: 1.2em;
   word-wrap: break-word;
   box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.15);
@@ -376,7 +377,7 @@ section.has-light-background, section.has-light-background h1, section.has-light
 :root {
   --r-bold-color: #FFB86C;
   --r-italic-color: #F1FA8C;
-  --r-inline-code-color: #50FA7B;
+  --r-inline-code-color: var(--dracula-cyan);
   --r-list-bullet-color: #8BE9FD;
 }
 
@@ -416,8 +417,9 @@ section.has-light-background, section.has-light-background h1, section.has-light
   left: 50%;
   transform: translateX(-50%);
   color: var(--dracula-cyan);
-  font-family: 'Courier New', monospace;
+  font-family: 'IM Fell English', cursive;
   font-size: 1em;
+  letter-spacing: -1px;
   font-weight: bold;
   text-shadow: 0 0 10px rgba(139, 233, 253, 0.3);
   width: 100%;
@@ -538,11 +540,11 @@ section.has-light-background, section.has-light-background h1, section.has-light
   border-radius: 30px;
   background: var(--dracula-current-line);
   color: var(--dracula-foreground);
-  font-family: 'Courier New', monospace;
+  font-family: 'IM Fell English', cursive;
   font-weight: bold;
   font-size: 20px;
   text-transform: uppercase;
-  letter-spacing: 2px;
+  letter-spacing: -1px;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
@@ -715,8 +717,12 @@ section.has-light-background, section.has-light-background h1, section.has-light
 
 .gsa-title {
   color: var(--dracula-pink);
-  font-family: 'Courier New', monospace;
+  font-family: 'IM Fell English', cursive;
   font-size: 1em;
+  letter-spacing: -1px;
+  transform: scaleY(0.9);
+  transform: scaleX(0.9);
+  transform-origin: center;
   font-weight: bold;
   text-align: center;
   text-shadow: 0 0 10px rgba(255, 121, 198, 0.3);
@@ -762,3 +768,39 @@ section.has-light-background, section.has-light-background h1, section.has-light
   margin: 0;
 }
 
+/*********************************************
+ * Highlight
+ *********************************************/
+@keyframes breathing-green {
+  0%, 100% {
+    text-shadow:
+      0 0 5px rgba(80, 250, 123, 0.5),
+      0 0 10px rgba(80, 250, 123, 0.3);
+  }
+  50% {
+    text-shadow:
+      0 0 15px rgba(80, 250, 123, 0.8),
+      0 0 25px rgba(80, 250, 123, 0.5);
+  }
+}
+ 
+.green-highlight {
+  color: var(--dracula-green);
+  font-family: 'IM Fell English', cursive;
+  letter-spacing: -1px;
+  font-size: 1em;
+  transform: scaleX(0.9);
+  transform-origin: center;
+  font-weight: bold;
+  text-align: center;
+  animation: breathing-green 3s ease-in-out infinite;
+}
+
+.paragraph {
+  font-family: 'IM Fell English', cursive;
+  font-size: 1em;
+  letter-spacing: -1px;
+  transform: scaleY(0.9);
+  transform: scaleX(0.9);
+  transform-origin: center;
+}
