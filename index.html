@@ -50,28 +50,204 @@
 				</section>
 
 				<section>
-					<h4>Big Bang</h4>
-					<p class="paragraph">This is how we can explain the <code>code</code></p>
-					<pre data-id="code-animation"><code class="hljs mips" data-trim
-						data-line-numbers="|1|2-4,8-10|17"><script type="text/template">
-						Genesis: 
-							la		$a1, presence
-							la		$a0, origin
-							jal 	Resurrection		# presence = origin
-							
-							jal 	Crystal_ball
+					<section data-auto-animate>
+						<h4>Big Bang</h4>
+						<div style="text-align: left;">
+							<p class="paragraph"><code style="font-weight: bold; color: #bf79db;">Genesis</code> is the starting point of the flow of life.
+							It's when the destiny is unveiled through the <code style="font-weight: bold; color: #66d9ef;">Crystal_ball</code>.</p>
+						</div>
+						<pre data-id="code-animation"><code class="hljs mips" data-trim
+							data-line-numbers="1,6"><script type="text/template">
+							Genesis: 
+								la		$a1, presence
+								la		$a0, origin
+								jal 	Resurrection		# presence = origin
+								
+								jal 	Crystal_ball
 
-							la		$a1, presence
-							la		$a0, origin
-							jal 	Resurrection		# presence = origin
+								la		$a1, presence
+								la		$a0, origin
+								jal 	Resurrection		# presence = origin
 
-							# iterations -> days
-							# walls -> corpse
+								# iterations -> days
+								# walls -> corpse
+						</script></code></pre>
+					</section>
 
-							la		$s5, days			
-							lb		$s5, 0($s5)			# s5 = days
-							addi	$s0, $zero, 0		# s0 = day counter
-					</script></code></pre>
+					<section data-auto-animate>
+						<div style="text-align: left;">
+							<p class="paragraph">Until the day that life becomes monotonous, today vanishes and <code style="font-weight: bold; color: #66d9ef;">Tomorrow</code> arrives.</p>
+						</div>
+						<pre data-id="code-animation"><code class="hljs mips" data-trim
+							data-line-numbers="1,7|17,26"><script type="text/template">
+							Genesis: 
+								...
+								la		$s5, days			
+								lb		$s5, 0($s5)			# s5 = days
+								addi	$s0, $zero, 0		# s0 = day counter
+								
+							_flow:
+
+								# print presence
+								...
+
+								# print corpses
+								...
+
+								beq		$s0, $s5, _eternity	# if gone through all days
+								
+								jal 	Tomorrow
+
+								la		$a1, presence
+								la		$a0, in_between
+								jal 	Resurrection		# presence = in_between
+
+								addi 	$s0, $s0, 1
+								j 		_flow
+
+							_eternity:	
+								addi 	$v0, $zero, 10
+								syscall
+						</script></code></pre>
+					</section>
+				</section>
+
+				<section>
+					<section data-auto-animate>
+						<h4>Coming back to life</h4>
+						<div style="text-align: left;">
+							<p class="paragraph">Amongst the ashes of the dead is a <code style="font-weight: bold; color: #bf79db;">Physician</code> 
+							looking for an ember of hope.</p>
+						</div>
+						<pre data-id="code-animation"><code class="hljs mips" data-trim
+							data-line-numbers="1,6,10"><script type="text/template">
+							Physician:
+								addi	$t2, $zero, 0					# t2 = x counter
+								addi	$t4, $zero, 8					# t4 = x limit
+								addi	$t5, $zero, 12				# t5 = y limit
+
+							_check1:
+								beq		$t2, $t4, _endcheck1	# x is out of range
+								
+								addi	$t3, $zero, 0					# t3 = y counter
+							_check2:
+								beq 	$t3, $t5, _endcheck2	# y is out of range
+
+								# call pulse and see if it's alive	
+								addi	$a0, $t2, 0
+								addi	$a1, $t3, 0
+								
+								addi	$sp, $sp, -20
+								sw		$ra, 0($sp)
+								sw		$t2, 4($sp)
+								sw		$t3, 8($sp)
+								sw		$t4, 12($sp)
+								sw		$t5, 16($sp)
+
+								jal 	Pulse
+
+								lw		$ra, 0($sp)
+								lw		$t2, 4($sp)
+								lw		$t3, 8($sp)
+								lw		$t4, 12($sp)
+								lw		$t5, 16($sp)
+								addi	$sp, $sp, 20
+
+								beq		$v0, $zero, _skipcb		# if it's dead
+
+								addi 	$t7, $zero, 1
+								sllv 	$t7, $t7, $t3
+								nor 	$t7, $t7, $zero			# 11..101..11
+								la		$t8, corpse
+								sll		$t9, $t2, 2				# which word * 4
+								add		$t8, $t8, $t9			# t8 = address of the word
+								lw		$t8, 0($t8)
+								and 	$t8, $t8, $t7
+								la		$t7, corpse
+								add		$t7, $t7, $t9
+								sw		$t8, 0($t7)				# update the word
+
+							_skipcb:
+								addi 	$t3, $t3, 1
+								j 		_check2
+
+							_endcheck2:
+
+								addi 	$t2, $t2, 1
+								j		_check1
+								
+							_endcheck1:
+								jr 		$ra
+						</script></code></pre>
+					</section>
+
+					<section data-auto-animate>
+						<div style="text-align: left;">
+							<p class="paragraph">May the dead rise from the ashes, with a scream of the
+								<code style="font-weight: bold; color: #66d9ef;">Pulse</code>.
+							</p>
+						</div>
+						<pre data-id="code-animation"><code class="hljs mips" data-trim
+							data-line-numbers="1|24"><script type="text/template">
+							Physician:
+								addi	$t2, $zero, 0					# t2 = x counter
+								addi	$t4, $zero, 8					# t4 = x limit
+								addi	$t5, $zero, 12				# t5 = y limit
+
+							_check1:
+								beq		$t2, $t4, _endcheck1	# x is out of range
+								
+								addi	$t3, $zero, 0					# t3 = y counter
+							_check2:
+								beq 	$t3, $t5, _endcheck2	# y is out of range
+
+								# call pulse and see if it's alive	
+								addi	$a0, $t2, 0
+								addi	$a1, $t3, 0
+								
+								addi	$sp, $sp, -20
+								sw		$ra, 0($sp)
+								sw		$t2, 4($sp)
+								sw		$t3, 8($sp)
+								sw		$t4, 12($sp)
+								sw		$t5, 16($sp)
+
+								jal 	Pulse
+
+								lw		$ra, 0($sp)
+								lw		$t2, 4($sp)
+								lw		$t3, 8($sp)
+								lw		$t4, 12($sp)
+								lw		$t5, 16($sp)
+								addi	$sp, $sp, 20
+
+								beq		$v0, $zero, _skipcb		# if it's dead
+
+								addi 	$t7, $zero, 1
+								sllv 	$t7, $t7, $t3
+								nor 	$t7, $t7, $zero			# 11..101..11
+								la		$t8, corpse
+								sll		$t9, $t2, 2				# which word * 4
+								add		$t8, $t8, $t9			# t8 = address of the word
+								lw		$t8, 0($t8)
+								and 	$t8, $t8, $t7
+								la		$t7, corpse
+								add		$t7, $t7, $t9
+								sw		$t8, 0($t7)				# update the word
+
+							_skipcb:
+								addi 	$t3, $t3, 1
+								j 		_check2
+
+							_endcheck2:
+
+								addi 	$t2, $t2, 1
+								j		_check1
+								
+							_endcheck1:
+								jr 		$ra
+						</script></code></pre>
+					</section>
 				</section>
 			</div>
 		</div>
