@@ -290,6 +290,134 @@
 						</script></code></pre>
 					</section>
 				</section>
+
+				<section>
+					<section data-auto-animate>
+						<h4>The Angel</h4>
+						<div style="text-align: left;">
+							<p class="paragraph">The sacred language of the universe is only known to our javascript <code style="font-weight: bold; color: #66d9ef;">interpreter</code>. 
+								
+							</p>
+						</div>
+						<pre data-id="code-animation"><code class="hljs javascript" data-trim
+							data-line-numbers="1,2|17-19,23-24|37-39,43-44"><script type="text/template">
+							export class Interpreter {
+							constructor() {
+								this.registers = {
+									zero: 0, at: 0, v0: 0, v1: 0, a0: 0, a1: 0, a2: 0, a3: 0,
+									t0: 0, t1: 0, t2: 0, t3: 0, t4: 0, t5: 0, t6: 0, t7: 0,
+									s0: 0, s1: 0, s2: 0, s3: 0, s4: 0, s5: 0, s6: 0, s7: 0,
+									t8: 0, t9: 0, k0: 0, k1: 0, gp: 0, sp: 0, fp: 0, ra: 0
+								};
+								this.labels = {};
+								this.data_labels = {}
+								this.memory = new Array(1024 * 4).fill(0);
+								this.code = [];
+								this.pc = 0;
+								this.memory_pointer = 0;
+							}
+
+							declare(data) {
+								// assign memory addresses and optionally values
+								// to labels in .data
+								...
+							}
+
+							first_pass() {
+								// assign addresses to labels in .code
+								this.pc = 0;
+								for (let line of this.code) {
+									if (line.includes(':')) {
+										// it's a label
+										this.labels[line.trim().slice(0,-1)] = this.pc + 1;
+										// lebels hold the address (index) of their NEXT instruction
+									}
+									this.pc += 1;
+								}
+								this.pc = 0;
+							}
+
+							execute(instruction) {
+								// execute arithmetic, logical, memory,
+								// and control instructions
+								...
+							}
+
+							control() {
+								// execute MIPS code
+								this.pc = 0;
+								// Set the stack pointer to the end of memory
+								// We assume that the stack is placed at the end of the memory array
+								this.registers.sp = 1023 * 4;
+								let status = true;
+								while (status) {
+									this.pc += 1;
+									status = this.execute(this.code[this.pc - 1]);
+								}
+							}
+						}
+						</script></code></pre>
+					</section>
+				</section>
+
+				<section>
+					<section data-auto-animate>
+						<h4>The Prophet</h4>
+						<div style="text-align: left;">
+							<p class="paragraph">The medium between the angel and our perspective on the canvas of life.</p>
+						</div>
+						<pre data-id="code-animation"><code class="hljs javascript" data-trim
+							data-line-numbers="1,2,5|14,16|30,39"><script type="text/template">
+							export function load(GSA, steps) {
+							interpreter.mips = new Interpreter();
+
+							for(let line of data_segment.split('\n')) {
+								interpreter.mips.declare(line);
+							}
+
+							interpreter.mips.memory[interpreter.mips.data_labels["iterations"]] = steps;
+							for (let i = 0; i < 8; i++) {
+								interpreter.mips.memory[interpreter.mips.data_labels["origin"] + i * 4] = GSA[i];
+							}
+
+							interpreter.mips.code = load_code.split('\n');
+							interpreter.mips.first_pass(load_code);
+
+							interpreter.mips.control(); // run Crystall-ball
+							
+							let days = interpreter.mips.memory[interpreter.mips.data_labels["days"]];
+							let corpse = [];
+							for (let i = 0; i < 8; i++) {
+								corpse[i] = interpreter.mips.memory[interpreter.mips.data_labels["corpse"] + i * 4];
+							}
+
+							return {
+								corpse: corpse,
+								days: days
+							};
+						}
+
+						export function tomorrow(GSA) {
+
+							for (let i = 0; i < 8; i++) {
+								interpreter.mips.memory[interpreter.mips.data_labels["presence"] + i * 4] = GSA[i];
+							}
+
+							interpreter.mips.code = next_code.split('\n');
+							interpreter.mips.first_pass(next_code);
+
+							interpreter.mips.control(); // run Tomorrow
+
+							let next = [];
+							for (let i = 0; i < 8; i++) {
+								next[i] = interpreter.mips.memory[interpreter.mips.data_labels["in_between"] + i * 4];
+							}
+
+							return next;
+						}
+						</script></code></pre>
+					</section>
+				</section>
 			</div>
 		</div>
 
