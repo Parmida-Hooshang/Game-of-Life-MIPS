@@ -21,7 +21,7 @@
 	<body>
 		<div class="reveal">
 			<div class="slides">
-				<section>
+				<section id="intro">
 					<h2>The Game of Life</h2>
 					<p class="green-highlight">Parmida Hooshang X Sina Liaghat</p>
 					<p class="paragraph" style="color: #C7253E;">Shiraz University - 2025</p>
@@ -49,7 +49,7 @@
 					</div>
 				</section>
 
-				<section>
+				<section id="data">
 					<section data-auto-animate>
 						<h4>The Book of Life</h4>
 						<div style="text-align: left;">
@@ -90,7 +90,7 @@
 					</section>
 				</section>
 
-				<section>
+				<section id="genesis">
 					<section data-auto-animate>
 						<h4>Big Bang</h4>
 						<div style="text-align: left;">
@@ -153,7 +153,34 @@
 					</section>
 				</section>
 
-				<section>
+				<section id="resurrection" data-auto-animate>
+					<h4>The Miracle of Resurrection</h4>
+					<div style="text-align: left;">
+						<p class="paragraph">The <code style="font-weight: bold; color: #bf79db;">Resurrection</code> performs the sacred transfer,
+							making the next generation's GSA become the new current reality.
+						</p>
+					</div>
+					<pre data-id="code-animation"><code class="hljs mips" data-trim
+						data-line-numbers="1,2,3,4,5,6,7,8,9,10,11,12,13,14,15"><script type="text/template">
+						Resurrection:
+							addi	$t0, $zero, 0
+							addi	$t1, $zero, 8
+
+						_move_element:
+							beq		$t0, $t1, _end_resurrection
+							lw		$t2, 0($a0)
+							sw		$t2, 0($a1)
+							addi	$a1, $a1, 4
+							addi	$a0, $a0, 4
+							addi	$t0, $t0, 1
+							j	_move_element
+
+						_end_resurrection:
+							jr 	$ra
+					</script></code></pre>
+				</section>
+
+				<section id="physician">
 					<section data-auto-animate>
 						<h4>Coming back to life</h4>
 						<div style="text-align: left;">
@@ -291,76 +318,471 @@
 					</section>
 				</section>
 
-				<section>
+				<section id="fate">
 					<section data-auto-animate>
-						<h4>The Angel</h4>
+						<h4>The Oracle of Fate</h4>
 						<div style="text-align: left;">
-							<p class="paragraph">The sacred language of the universe is only known to our javascript <span class="code-highlight"  style="color: #bf79db;">interpreter</span>. 
-								
-							</p>
+						<p class="paragraph">Like a seed in the grand canvas, <code style="font-weight: bold; color: #bf79db;">Fate</code> whispers:</p>
+						<p class="fragment" style="font-family: 'IM Fell English'; color: #C7253E; margin-left: 2em;">
+							"Will I bloom or return to dust?"
+						</p>
 						</div>
-						<pre data-id="code-animation"><code class="hljs javascript" data-trim
-							data-line-numbers="1,2|17-19,23-24|37-39,43-44"><script type="text/template">
-							export class Interpreter {
-							constructor() {
-								this.registers = {
-									zero: 0, at: 0, v0: 0, v1: 0, a0: 0, a1: 0, a2: 0, a3: 0,
-									t0: 0, t1: 0, t2: 0, t3: 0, t4: 0, t5: 0, t6: 0, t7: 0,
-									s0: 0, s1: 0, s2: 0, s3: 0, s4: 0, s5: 0, s6: 0, s7: 0,
-									t8: 0, t9: 0, k0: 0, k1: 0, gp: 0, sp: 0, fp: 0, ra: 0
-								};
-								this.labels = {};
-								this.data_labels = {}
-								this.memory = new Array(1024 * 4).fill(0);
-								this.code = [];
-								this.pc = 0;
-								this.memory_pointer = 0;
-							}
+						<pre data-id="code-animation"><code class="hljs mips" data-trim data-line-numbers="1,2,3,4,5,6"><script type="text/template">
+						Fate:
+							addi  $sp, $sp, -4  
+							sw  $ra, 0($sp)   
 
-							declare(data) {
-								// assign memory addresses and optionally values
-								// to labels in .data
-								...
-							}
+							xor $t0, $t0, $t0 
+							add $t1, $zero, $a0 
+							add $t2, $zero, $a1 
+							addi $a2, $zero, 8  
+							addi $a3, $zero, 12 
+						</script></code></pre>
+					</section>
 
-							first_pass() {
-								// assign addresses to labels in .code
-								this.pc = 0;
-								for (let line of this.code) {
-									if (line.includes(':')) {
-										// it's a label
-										this.labels[line.trim().slice(0,-1)] = this.pc + 1;
-										// lebels hold the address (index) of their NEXT instruction
-									}
-									this.pc += 1;
-								}
-								this.pc = 0;
-							}
+					<section data-auto-animate>
+						<h4>The Pulse of Life</h4>
+						<div style="text-align: left;">
+						<p class="paragraph">The <code style="font-weight: bold; color: #bf79db;">Pulse</code> checks if life still flows.</p>
+						</div>
+						<pre data-id="code-animation"><code class="hljs mips" data-trim data-line-numbers="1-12"><script type="text/template">
+						Pulse:
+							la  $t3, presence    
+							add $t4, $zero, $a0 
+							sll $t4, $t4, 2      
+							add $t3, $t3, $t4    
+							lw  $t4, 0($t3)      
 
-							execute(instruction) {
-								// execute arithmetic, logical, memory,
-								// and control instructions
-								...
-							}
+							addi $t5, $zero, 1   
+							sllv $t5, $t5, $a1  
 
-							control() {
-								// execute MIPS code
-								this.pc = 0;
-								// Set the stack pointer to the end of memory
-								// We assume that the stack is placed at the end of the memory array
-								this.registers.sp = 1023 * 4;
-								let status = true;
-								while (status) {
-									this.pc += 1;
-									status = this.execute(this.code[this.pc - 1]);
-								}
-							}
-						}
+							xor $v0, $v0, $v0 
+							and $t4, $t4, $t5  
+							bne $t4, $t5, _no_pulse
+							addi $v0, $zero, 1 
+
+						_no_pulse:
+						jr  $ra 
+						</script></code></pre>
+					</section>
+
+					<section data-auto-animate>
+						<h4>The World's Embrace</h4>
+						<div style="text-align: left;">
+						<p class="paragraph"><code style="font-weight: bold; color: #bf79db;">Bound</code> wraps the universe like a möbius strip:</p>
+						<p style="font-family: 'IM Fell English'; margin-left: 2em;">
+							"Fall off one edge, And return from its twin"
+						</p>
+						</div>
+						<pre data-id="code-animation"><code class="hljs mips" data-trim data-line-numbers="1-15"><script type="text/template">
+						Bound:
+							bgez $a0, _skip_fix_1  
+							addi $a0, $zero, 7     
+
+						_skip_fix_1:
+							bgez $a1, _skip_fix_2  
+							addi $a1, $zero, 11    
+
+						_skip_fix_2:
+							bne $a0, $a2, _skip_fix_3 
+							addi $a0, $zero, 0     
+
+						_skip_fix_3:
+							bne $a1, $a3, _skip_fix_4 
+							addi $a1, $zero, 0     
+
+						_skip_fix_4:
+							jr $ra
+						</script></code></pre>
+					</section>
+
+					<section data-auto-animate>
+						<h4>Circle of Judgment</h4>
+						<div style="text-align: left;">
+						<p class="paragraph">Fate observes the neighbors.</p>
+						</div>
+						<pre data-id="code-animation"><code class="hljs mips" data-trim data-line-numbers="7-30"><script type="text/template">
+						# -1 0 (North)
+						addi $a0, $a0, -1
+						jal Bound
+						jal Pulse
+						add $t0, $t0, $v0
+						add $a0, $zero, $t1
+
+						# 0 -1 (West)
+						addi $a1, $a1, -1
+						jal Bound
+						jal Pulse
+						add $t0, $t0, $v0
+						add $a1, $zero, $t2
+
+						# +1 0 (South)
+						addi $a0, $a0, 1
+						jal Bound
+						jal Pulse
+						add $t0, $t0, $v0
+						add $a0, $zero, $t1
+
+						# 0 +1 (East)
+						addi $a1, $a1, 1
+						jal Bound
+						jal Pulse
+						add $t0, $t0, $v0
+						add $a1, $zero, $t2
+						</script></code></pre>
+					</section>
+
+					<section data-auto-animate>
+						<h4>The Holy Verdict</h4>
+						<div style="text-align: left;">
+						<p class="paragraph">Conway's laws rendered as the final judgment.</p>
+						</div>
+						<pre data-id="code-animation"><code class="hljs mips" data-trim data-line-numbers="55-76"><script type="text/template">
+							jal Pulse
+
+							addi $t1, $zero, 1
+							addi $t2, $zero, 2
+							addi $t3, $zero, 3
+
+							bne $t0, $zero, _skip_case_0
+							addi $v0, $zero, 0 
+						j _return_fate
+
+						_skip_case_0:
+							bne $t0, $t1, _skip_case_1
+							addi $v0, $zero, 0
+							j _return_fate
+
+						_skip_case_1:    
+							bne $t0, $t2, _skip_case_2
+							j _return_fate   
+
+						_skip_case_2:
+							bne $t0, $t3, _skip_case_3
+							addi $v0, $zero, 1
+							j _return_fate
+
+						_skip_case_3:
+							addi $v0, $zero, 0
+
+						_return_fate:
+							lw $ra, 0($sp)    
+							addi $sp, $sp, 4
+							jr $ra
 						</script></code></pre>
 					</section>
 				</section>
 
-				<section>
+				<section id="tomorrow">
+					<section data-auto-animate>
+						<h4>The Dawn of Tomorrow</h4>
+						<div style="text-align: left;">
+							<p class="paragraph"><code style="font-weight: bold; color: #bf79db;">Tomorrow</code> evaluates the next generation,
+								using the <code style="font-weight: bold; color: #66d9ef;">Fate</code> of each cell while tracking if the world has stopped evolving.
+							</p>
+						</div>
+						<pre data-id="code-animation"><code class="hljs mips" data-trim
+							data-line-numbers="1,2,3,4,5,6,7,8"><script type="text/template">
+							Tomorrow:
+								addi 	$sp, $sp, -4	# Allocate stack space
+								sw 		$ra, 0($sp) 	# Save return address
+
+								la		$t0, everlasting	# Load everlasting flag address
+								addi	$t1, $zero, 1	# Assume world will stop changing
+								sb		$t1, 0($t0)		# Initialize flag (1 = no change)
+
+								xor		$t0, $t0, $t0	# row index = 0
+								xor		$t1, $t1, $t1	# col index = 0
+								addi	$t2, $zero, 8 	# max rows
+								addi	$t3, $zero, 12	# max cols
+						</script></code></pre>
+					</section>
+
+					<section data-auto-animate>
+						<div style="text-align: left;">
+							<p class="paragraph">Armed with bitmasks and memory addresses, it prepares to traverse
+								the canvas.
+							</p>
+						</div>
+						<pre data-id="code-animation"><code class="hljs mips" data-trim
+							data-line-numbers="9-16|17-24"><script type="text/template">
+								addi	$t4, $zero, 1		# Bitmask (starts at LSB)
+								la		$t5, presence		# Current generation
+								la		$t6, in_between		# Next generation
+								xor		$t7, $t7, $t7		# Current word
+								xor		$t8, $t8, $t8		# Next word
+								addi	$t9, $zero, -1		# Mask inverter
+
+							_proc_row:
+								beq		$t0, $t2, _end_proc_row	# All rows done?
+								xor		$t1, $t1, $t1		# Reset column counter
+								addi	$t4, $zero, 1		# Reset bitmask
+								lw		$t7, 0($t5)		# Load current row
+								lw		$t8, 0($t6)		# Load next row buffer
+
+							_proc_col:
+								beq		$t1, $t3, _end_proc_col	# All columns done?
+								# Prepare to consult Fate...
+						</script></code></pre>
+					</section>
+
+					<section data-auto-animate>
+						<div style="text-align: left;">
+							<p class="paragraph">For each cell, it carefully preserves the sacred registers before
+								witnessing the <code style="font-weight: bold; color: #66d9ef;">Fate</code>, then applies the verdict to the next generation.
+							</p>
+						</div>
+						<pre data-id="code-animation"><code class="hljs mips" data-trim
+							data-line-numbers="25-36|37-48"><script type="text/template">
+								# Sacred preservation ritual
+								addi	$sp, $sp, -24
+								sw	$t0, 0($sp)		# row
+								sw	$t1, 4($sp)		# column
+								sw	$t2, 8($sp)		# max rows
+								sw	$t3, 12($sp)	# max cols
+								sw	$t4, 16($sp)	# bitmask
+								sw	$t5, 20($sp)	# current GSA ptr
+
+								# Consult the Oracle
+								add	$a0, $zero, $t0	# row
+								add	$a1, $zero, $t1	# column
+								jal	Fate		# $v0 contains destiny
+
+								# Restore cosmic balance
+								lw	$t5, 20($sp)
+								lw	$t4, 16($sp)
+								lw	$t3, 12($sp)
+								lw	$t2, 8($sp)
+								lw	$t1, 4($sp)
+								lw	$t0, 0($sp)
+								addi	$sp, $sp, 24
+
+								# Apply Fate's decree
+								beq	$v0, $zero, _kill_cell
+								or	$t8, $t8, $t4	# Bring cell to life
+								j	_spare_cell
+						</script></code></pre>
+					</section>
+
+					<section data-auto-animate>
+						<div style="text-align: left;">
+							<p class="paragraph">When the evolution completes, it checks if the world has changed,
+								setting the <code style="font-weight: bold; color: #66d9ef;">everlasting</code> flag if equilibrium is reached.
+							</p>
+						</div>
+						<pre data-id="code-animation"><code class="hljs mips" data-trim
+							data-line-numbers="49-68"><script type="text/template">
+							_kill_cell:
+								addi	$t9, $zero, -1
+								xor	$t9, $t9, $t4	# Create inverse mask
+								and	$t8, $t8, $t9	# Kill the cell
+
+							_spare_cell:
+								sll	$t4, $t4, 1	# Shift mask for next cell
+								addi	$t1, $t1, 1	# Next column
+								j	_proc_col
+
+							_end_proc_col:
+								bne	$t7, $t8, _evolving	# Did this row change?
+								j	_not_evolving
+
+							_evolving:
+								la	$t1, everlasting
+								sb	$zero, 0($t1)	# 0 = world still changing
+
+							_not_evolving:
+								sw	$t8, 0($t6)		# Save next generation row
+								addi	$t0, $t0, 1	# Next row
+								addi	$t5, $t5, 4
+								addi	$t6, $t6, 4
+								j	_proc_row
+
+							_end_proc_row:
+								lw 	$ra, 0($sp) 	# Restore return address
+								addi 	$sp, $sp, 4
+								jr	$ra		# Return to Genesis
+						</script></code></pre>
+					</section>
+				</section>
+
+				<section id="crystal-ball">
+					<section data-auto-animate>
+						<h4>The Moment of Truth</h4>
+						<div style="text-align: left;">
+							<p class="paragraph">The <code style="font-weight: bold; color: #bf79db;">Crystal_ball</code> gazes into the future,
+								revealing when stability will be achieved and which cells are doomed to eternal rest.
+							</p>
+						</div>
+						<pre data-id="code-animation"><code class="hljs mips" data-trim
+							data-line-numbers="1,2,3,4,5,6,7,8"><script type="text/template">
+							Crystal_ball:
+								# Initialize corpses from initial state
+								addi	$sp, $sp, -4
+								sw		$ra, 0($sp)
+								jal 	Physician		# Mark initial dead cells
+								lw		$ra, 0($sp)
+								addi	$sp, $sp, 4
+
+								la 		$t0, iterations	# Maximum days to simulate
+								lb 		$t0, 0($t0)		
+								addi 	$t1, $zero, 0	# Current day counter
+						</script></code></pre>
+					</section>
+
+					<section data-auto-animate>
+						<div style="text-align: left;">
+							<p class="paragraph">Through an endless cycle of <code style="font-weight: bold; color: #66d9ef;">Tomorrow</code>s,
+								it watches days pass until evolution ceases or the maximum iterations complete.
+							</p>
+						</div>
+						<pre data-id="code-animation"><code class="hljs mips" data-trim
+							data-line-numbers="9-20|21-32"><script type="text/template">
+							_loopcb:
+								beq 	$t1, $t0, _endcb	# Stop at max iterations
+
+								# Preserve cosmic registers
+								addi 	$sp, $sp, -12
+								sw 		$t0, 0($sp)		# Max iterations
+								sw 		$t1, 4($sp)		# Current day
+								sw 		$ra, 8($sp)		# Return address
+
+								jal 	Tomorrow		# Calculate next generation
+								
+								# Update presence with new generation
+								la		$a1, presence
+								la		$a0, in_between
+								jal 	Resurrection	
+
+								# Update corpse array with new deaths
+								addi	$sp, $sp, -4
+								sw		$ra, 0($sp)
+								jal 	Physician
+								lw		$ra, 0($sp)
+								addi	$sp, $sp, 4
+						</script></code></pre>
+					</section>
+
+					<section data-auto-animate>
+						<div style="text-align: left;">
+							<p class="paragraph">The sacred <code style="font-weight: bold; color: #66d9ef;">everlasting</code> flag reveals when
+								the universe reaches equilibrium, allowing early termination of the prophecy.
+							</p>
+						</div>
+						<pre data-id="code-animation"><code class="hljs mips" data-trim
+							data-line-numbers="33-44|45-52"><script type="text/template">
+								# Check if world has stabilized
+								la 		$t2, everlasting
+								lb 		$t2, 0($t2)		# Get everlasting flag
+								addi 	$t3, $zero, 1	# Comparison value
+
+								# Restore cosmic registers
+								lw 		$ra, 8($sp)
+								lw 		$t1, 4($sp)
+								lw 		$t0, 0($sp)
+								addi 	$sp, $sp, 12
+
+								addi 	$t1, $t1, 1		# Increment day counter
+								bne 	$t2, $t3, _loopcb	# Continue if still changing
+
+								# Adjust counter if stabilized early
+								addi	$t1, $t1, -1		
+
+							_endcb:
+								# Record final day count
+								la 		$t0, days			
+								sb 		$t1, 0($t0)
+								jr 		$ra		# Return with prophecy complete
+						</script></code></pre>
+					</section>
+
+					<section data-auto-animate>
+						<h4>The Prophecy Fulfilled</h4>
+						<div style="text-align: left;">
+							<p class="paragraph">When the vision clears, two truths remain:</p>
+							<ul class="paragraph">
+								<li>The <code style="color: #a6e22e;">days</code> until equilibrium (or maximum iterations reached)</li>
+								<li>The <code style="color: #a6e22e;">corpse</code> array marking cells that never lived</li>
+							</ul>
+							<p class="paragraph">These revelations are delivered back to <code style="font-weight: bold; color: #bf79db;">Genesis</code>,
+								where the flow of life will play them out.
+							</p>
+						</div>
+						<div class="fragment" style="margin-top: 25px; text-align: center;">
+							<p style="font-family: 'IM Fell English', serif; font-size: 1em; color: #C7253E;">
+								"Thus flows the river of bits, from source to the canvas."
+							</p>
+						</div>
+					</section>
+				</section>
+
+				<section id="interpreter" data-auto-animate>
+					<h4>The Angel</h4>
+					<div style="text-align: left;">
+						<p class="paragraph">The sacred language of the universe is only known to our javascript <span class="code-highlight"  style="color: #bf79db;">interpreter</span>. 
+							
+						</p>
+					</div>
+					<pre data-id="code-animation"><code class="hljs javascript" data-trim
+						data-line-numbers="1,2|17-19,23-24|37-39,43-44"><script type="text/template">
+						export class Interpreter {
+						constructor() {
+							this.registers = {
+								zero: 0, at: 0, v0: 0, v1: 0, a0: 0, a1: 0, a2: 0, a3: 0,
+								t0: 0, t1: 0, t2: 0, t3: 0, t4: 0, t5: 0, t6: 0, t7: 0,
+								s0: 0, s1: 0, s2: 0, s3: 0, s4: 0, s5: 0, s6: 0, s7: 0,
+								t8: 0, t9: 0, k0: 0, k1: 0, gp: 0, sp: 0, fp: 0, ra: 0
+							};
+							this.labels = {};
+							this.data_labels = {}
+							this.memory = new Array(1024 * 4).fill(0);
+							this.code = [];
+							this.pc = 0;
+							this.memory_pointer = 0;
+						}
+
+						declare(data) {
+							// assign memory addresses and optionally values
+							// to labels in .data
+							...
+						}
+
+						first_pass() {
+							// assign addresses to labels in .code
+							this.pc = 0;
+							for (let line of this.code) {
+								if (line.includes(':')) {
+									// it's a label
+									this.labels[line.trim().slice(0,-1)] = this.pc + 1;
+									// lebels hold the address (index) of their NEXT instruction
+								}
+								this.pc += 1;
+							}
+							this.pc = 0;
+						}
+
+						execute(instruction) {
+							// execute arithmetic, logical, memory,
+							// and control instructions
+							...
+						}
+
+						control() {
+							// execute MIPS code
+							this.pc = 0;
+							// Set the stack pointer to the end of memory
+							// We assume that the stack is placed at the end of the memory array
+							this.registers.sp = 1023 * 4;
+							let status = true;
+							while (status) {
+								this.pc += 1;
+								status = this.execute(this.code[this.pc - 1]);
+							}
+						}
+					}
+					</script></code></pre>
+				</section>
+
+				<section id="interface">
 					<section data-auto-animate>
 						<h4>The Prophet</h4>
 						<div style="text-align: left;">
@@ -417,6 +839,21 @@
 						}
 						</script></code></pre>
 					</section>
+				</section>
+
+				<section id="final" data-background-color="#1a1a2e">
+					<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 0 15%;">
+						<div style="position: relative;">
+							<div style="border-left: 3px solid #C7253E; padding-left: 1em;">
+								<p style="color: #f8f8f2; font-family: 'IM Fell English', serif; font-size: 0.8em; line-height: 1.6; text-align: left;">
+									"Oh, the terrible struggle that I have had against sleep so often of late; the pain of the sleeplessness, or the pain of the fear of sleep, and with such unknown horror as it has for me! How blessed are some people, whose lives have no fears, no dreads; to whom sleep is a blessing that comes nightly, and brings nothing but sweet dreams."
+								</p>
+								<p style="color: #6272a4; text-align: right; font-size: 1em; margin-top: 1em;">
+									― Bram Stoker, <span style="font-style: italic;">Dracula</span>
+								</p>
+							</div>
+						</div>
+					</div>
 				</section>
 			</div>
 		</div>
