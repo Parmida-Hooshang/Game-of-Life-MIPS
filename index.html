@@ -161,7 +161,7 @@
 						</p>
 					</div>
 					<pre data-id="code-animation"><code class="hljs mips" data-trim
-						data-line-numbers="1,2,3,4,5,6,7,8,9,10,11,12,13,14,15"><script type="text/template">
+						data-line-numbers="1,5,14"><script type="text/template">
 						Resurrection:
 							addi	$t0, $zero, 0
 							addi	$t1, $zero, 8
@@ -327,16 +327,17 @@
 							"Will I bloom or return to dust?"
 						</p>
 						</div>
-						<pre data-id="code-animation"><code class="hljs mips" data-trim data-line-numbers="1,2,3,4,5,6"><script type="text/template">
+						<pre data-id="code-animation"><code class="hljs mips" data-trim data-line-numbers="1, 10"><script type="text/template">
 						Fate:
-							addi  $sp, $sp, -4  
-							sw  $ra, 0($sp)   
+							addi $sp, $sp, -4  
+							sw   $ra, 0($sp)   
 
-							xor $t0, $t0, $t0 
-							add $t1, $zero, $a0 
-							add $t2, $zero, $a1 
+							xor  $t0, $t0, $t0 
+							add  $t1, $zero, $a0 
+							add  $t2, $zero, $a1 
 							addi $a2, $zero, 8  
-							addi $a3, $zero, 12 
+							addi $a3, $zero, 12
+							... 
 						</script></code></pre>
 					</section>
 
@@ -345,7 +346,7 @@
 						<div style="text-align: left;">
 						<p class="paragraph"><span class="code-highlight" style="color: #bf79db;">Pulse</span> checks if life still flows.</p>
 						</div>
-						<pre data-id="code-animation"><code class="hljs mips" data-trim data-line-numbers="1-12"><script type="text/template">
+						<pre data-id="code-animation"><code class="hljs mips" data-trim data-line-numbers="1,2,13,16"><script type="text/template">
 						Pulse:
 							la  $t3, presence    
 							add $t4, $zero, $a0 
@@ -356,9 +357,9 @@
 							addi $t5, $zero, 1   
 							sllv $t5, $t5, $a1  
 
-							xor $v0, $v0, $v0 
-							and $t4, $t4, $t5  
-							bne $t4, $t5, _no_pulse
+							xor  $v0, $v0, $v0 
+							and  $t4, $t4, $t5  
+							bne  $t4, $t5, _no_pulse
 							addi $v0, $zero, 1 
 
 						_no_pulse:
@@ -374,7 +375,7 @@
 							"Fall off one edge, And return from its twin"
 						</p>
 						</div>
-						<pre data-id="code-animation"><code class="hljs mips" data-trim data-line-numbers="1-15"><script type="text/template">
+						<pre data-id="code-animation"><code class="hljs mips" data-trim data-line-numbers="1,5,9,13,17"><script type="text/template">
 						Bound:
 							bgez $a0, _skip_fix_1  
 							addi $a0, $zero, 7     
@@ -384,15 +385,15 @@
 							addi $a1, $zero, 11    
 
 						_skip_fix_2:
-							bne $a0, $a2, _skip_fix_3 
+							bne  $a0, $a2, _skip_fix_3 
 							addi $a0, $zero, 0     
 
 						_skip_fix_3:
-							bne $a1, $a3, _skip_fix_4 
+							bne  $a1, $a3, _skip_fix_4 
 							addi $a1, $zero, 0     
 
 						_skip_fix_4:
-							jr $ra
+							jr   $ra
 						</script></code></pre>
 					</section>
 
@@ -401,7 +402,7 @@
 						<div style="text-align: left;">
 						<p class="paragraph"><span class="code-highlight" style="color: #bf79db;">Fate</span> observes the neighbors.</p>
 						</div>
-						<pre data-id="code-animation"><code class="hljs mips" data-trim data-line-numbers="7-30"><script type="text/template">
+						<pre data-id="code-animation"><code class="hljs mips" data-trim data-line-numbers="4,11,18,25"><script type="text/template">
 						# -1 0 (North)
 						addi $a0, $a0, -1
 						jal Bound
@@ -437,38 +438,38 @@
 						<div style="text-align: left;">
 						<p class="paragraph">Conway's laws rendered as the final judgment.</p>
 						</div>
-						<pre data-id="code-animation"><code class="hljs mips" data-trim data-line-numbers="55-76"><script type="text/template">
+						<pre data-id="code-animation"><code class="hljs mips" data-trim data-line-numbers="1,7,11,12,16,17,20,21,25,28"><script type="text/template">
 							jal Pulse
 
 							addi $t1, $zero, 1
 							addi $t2, $zero, 2
 							addi $t3, $zero, 3
 
-							bne $t0, $zero, _skip_case_0
+							bne  $t0, $zero, _skip_case_0
 							addi $v0, $zero, 0 
-						j _return_fate
+							j 	 _return_fate
 
 						_skip_case_0:
-							bne $t0, $t1, _skip_case_1
+							bne  $t0, $t1, _skip_case_1
 							addi $v0, $zero, 0
-							j _return_fate
+							j    _return_fate
 
 						_skip_case_1:    
-							bne $t0, $t2, _skip_case_2
-							j _return_fate   
+							bne  $t0, $t2, _skip_case_2
+							j    _return_fate   
 
 						_skip_case_2:
-							bne $t0, $t3, _skip_case_3
+							bne  $t0, $t3, _skip_case_3
 							addi $v0, $zero, 1
-							j _return_fate
+							j    _return_fate
 
 						_skip_case_3:
 							addi $v0, $zero, 0
 
 						_return_fate:
-							lw $ra, 0($sp)    
+							lw   $ra, 0($sp)    
 							addi $sp, $sp, 4
-							jr $ra
+							jr   $ra
 						</script></code></pre>
 					</section>
 				</section>
@@ -482,19 +483,26 @@
 							</p>
 						</div>
 						<pre data-id="code-animation"><code class="hljs mips" data-trim
-							data-line-numbers="1,2,3,4,5,6,7,8"><script type="text/template">
+							data-line-numbers="1,5,14,15"><script type="text/template">
 							Tomorrow:
 								addi 	$sp, $sp, -4	# Allocate stack space
-								sw 		$ra, 0($sp) 	# Save return address
+								sw 	 	$ra, 0($sp) 	# Save return address
 
-								la		$t0, everlasting	# Load everlasting flag address
-								addi	$t1, $zero, 1	# Assume world will stop changing
-								sb		$t1, 0($t0)		# Initialize flag (1 = no change)
+								la	 	$t0, everlasting	# Load everlasting address
+								addi 	$t1, $zero, 1		# Set $t1 = 1
+								sb	 	$t1, 0($t0)			# Initialize everlasting flag = 1
 
-								xor		$t0, $t0, $t0	# row index = 0
-								xor		$t1, $t1, $t1	# col index = 0
-								addi	$t2, $zero, 8 	# max rows
-								addi	$t3, $zero, 12	# max cols
+								xor	 	$t0, $t0, $t0	# Initialize row index = 0
+								xor	 	$t1, $t1, $t1	# Initialize col index = 0 
+								addi 	$t2, $zero, 8 	# Max rows = 8
+								addi 	$t3, $zero, 12	# Max cols = 12
+								addi 	$t4, $zero, 1	# One-hot mask
+								la	 	$t5, presence	# Current GSA (presence) address
+								la	 	$t6, in_between	# Next GSA (in_between) address
+								xor	 	$t7, $t7, $t7	# Current GSA word
+								xor	 	$t8, $t8, $t8	# Next GSA word
+								addi 	$t9, $zero, -1	# One-hot complement mask
+								...
 						</script></code></pre>
 					</section>
 
